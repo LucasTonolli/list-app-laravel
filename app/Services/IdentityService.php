@@ -6,7 +6,7 @@ namespace App\Services;
 
 use App\Models\User;
 
-final class IdentitiesService
+final class IdentityService
 {
     public function register(): string
     {

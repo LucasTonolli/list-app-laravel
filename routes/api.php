@@ -7,4 +7,4 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/identities', [App\Http\Controllers\Identities::class, '__invoke']);
+Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__invoke']);

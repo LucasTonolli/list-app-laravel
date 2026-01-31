@@ -2,17 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\IdentitiesService;
+use App\Services\IdentityService;
 use Illuminate\Http\Request;
 
-class Identities extends Controller
+class IdentityController extends Controller
 {
     /**
      * Handle the incoming request.
      */
     public function __invoke(Request $request)
     {
-        $service = app(IdentitiesService::class);
+        $service = app(IdentityService::class);
         $response = $service->register();
 
         return response()->json([
