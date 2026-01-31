@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('list_items', function (Blueprint $table) {
             $table->uuid()->primary();
-            $table->foreignId('list_id')->constrained();
+            $table->foreignUuid('list_uuid')->constrained('lists', 'uuid');
             $table->string('name');
             $table->text('description');
             $table->boolean('completed')->default(false);
-            $table->interger('version')->default(1);
-            $table->foreignId('locked_by')->nullable()->constrained('users');
+            $table->integer('version')->default(1);
+            $table->foreignUuid('locked_by')->nullable()->constrained('users', 'uuid');
             $table->timestamp('locked_at')->nullable();
             $table->timestamps();
         });
