@@ -45,4 +45,13 @@ final class CustomListService
             return $list->delete();
         });
     }
+
+    public function update(CustomList $list, string $title): bool
+    {
+        return DB::transaction(function () use ($list, $title) {
+            return $list->update([
+                'title' => $title,
+            ]);
+        });
+    }
 }

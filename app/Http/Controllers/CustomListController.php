@@ -2,15 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\SaveCustomListRequest;
 use App\Http\Requests\StoreCustomListRequest;
 use App\Http\Resources\CustomListResource;
 use App\Models\CustomList;
 use App\Services\CustomListService;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Pest\ArchPresets\Custom;
-use Symfony\Component\HttpKernel\HttpCache\Store;;
+
 
 class CustomListController extends Controller
 {
@@ -38,7 +37,7 @@ class CustomListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCustomListRequest $request, CustomListService $service)
+    public function store(SaveCustomListRequest $request, CustomListService $service)
     {
         $list = $service->create($request->validated('title'), $request->user()->uuid);
 
@@ -69,10 +68,11 @@ class CustomListController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(SaveCustomListRequest $request, CustomList $list, CustomListService $service)
     {
+        $service->update($list, $request->validated('title'));
         return response()->json([
-            'list' => [],
+            'list' => (new CustomListResource($list))->toArray($request),
         ]);
     }
 
