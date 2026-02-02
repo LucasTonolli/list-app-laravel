@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('custom_lists', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('title');
-            $table->foreignUuid('owner_uuid')->constrained('users', 'uuid');
+            $table->foreignUuid('owner_uuid')->constrained('users', 'uuid')->onDelete('cascade');
             $table->timestamps();
         });
     }

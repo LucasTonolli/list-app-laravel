@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('list_items', function (Blueprint $table) {
             $table->uuid()->primary();
-            $table->foreignUuid('custom_list_uuid')->constrained('custom_lists', 'uuid');
+            $table->foreignUuid('custom_list_uuid')->constrained('custom_lists', 'uuid')->onDelete('cascade');
             $table->string('name');
             $table->text('description');
             $table->boolean('completed')->default(false);
