@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomListRequest;
+use App\Http\Resources\CustomListResource;
 use App\Services\CustomListService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
@@ -36,14 +37,13 @@ class CustomListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(StoreCustomListRequest $request)
+    public function store(StoreCustomListRequest $request, CustomListService $service)
     {
-        $service = app(CustomListService::class);
-        $list = $service->create(['data' => $request->validated(), 'user' => $request->user()->uuid]);
+        $list = $service->create($request->validated('title'), $request->user()->uuid);
 
         return response()->json(
             [
-                'list' => $list->toArray($request),
+                'list' => (new CustomListResource($list))->toArray($request),
             ],
             status: 201
         );

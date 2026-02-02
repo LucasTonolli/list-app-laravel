@@ -10,19 +10,23 @@ use Illuminate\Support\Facades\Log;
 
 final class CustomListService
 {
-    public function create(array $data): CustomListResource
+    public function create(string $title, string $userUuid): CustomList
     {
 
         $list = CustomList::create([
-            'title' => $data['data']['title'],
-            'owner_uuid' => $data['user'],
+            'title' => $title,
+            'owner_uuid' => $userUuid,
         ]);
 
-        $resource = new CustomListResource($list);
+        $list->owner()->associate(
+            $userUuid,
+            ['role' => 'owner']
+        );
 
         Log::info('List created', [
-            'list' => $resource,
+            'list' => $list,
+            'owner' => $list->owner
         ]);
-        return $resource;
+        return $list;
     }
 }
