@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Http\Resources\CustomListResource;
 use App\Models\CustomList;
+use App\Models\User;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -30,5 +31,11 @@ final class CustomListService
             ]);
             return $list;
         });
+    }
+
+    public function getAll(string $userUuid): Collection
+    {
+        $user = User::where('uuid', $userUuid)->first();
+        return $user->lists()->get();
     }
 }

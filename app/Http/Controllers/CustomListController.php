@@ -16,10 +16,10 @@ class CustomListController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request)
+    public function index(Request $request, CustomListService $service)
     {
         return response()->json([
-            'lists' => $request->user()->lists()->get(),
+            'lists' => $service->getAll($request->user()->uuid)->toResourceCollection(CustomListResource::class),
         ]);
     }
 
@@ -29,9 +29,7 @@ class CustomListController extends Controller
      */
     public function create(Request $request)
     {
-        return response()->json([
-            'list' => [],
-        ]);
+        throw new \Exception('Not implemented');
     }
 
     /**
