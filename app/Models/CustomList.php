@@ -34,4 +34,9 @@ class CustomList extends Model
     {
         return $this->hasMany(ListItem::class);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }
