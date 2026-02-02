@@ -33,6 +33,6 @@ class ListItem extends Model
 
     public function list(): BelongsTo
     {
-        return $this->belongsTo(Lists::class);
+        return $this->belongsTo(CustomList::class);
     }
 }

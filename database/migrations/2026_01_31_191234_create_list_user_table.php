@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('list_user', function (Blueprint $table) {
+        Schema::create('custom_list_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignUuid('list_uuid')->constrained('lists', 'uuid');
+            $table->foreignUuid('custom_list_uuid')->constrained('custom_lists', 'uuid');
             $table->foreignUuid('user_uuid')->constrained('users', 'uuid');
             $table->string('role');
             $table->timestamps();

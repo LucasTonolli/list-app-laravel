@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('lists', function (Blueprint $table) {
+        Schema::create('custom_lists', function (Blueprint $table) {
             $table->uuid()->primary();
             $table->string('title');
             $table->foreignUuid('owner_uuid')->constrained('users', 'uuid');
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('lists');
+        Schema::dropIfExists('custom_list');
     }
 };

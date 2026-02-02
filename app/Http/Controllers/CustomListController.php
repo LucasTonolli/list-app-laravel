@@ -2,18 +2,21 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
-use ListService;
+use CustomListService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use Illuminate\Http\Request;;
 
-class ListController extends Controller
+class CustomListController extends Controller
 {
+    use AuthorizesRequests;
+
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         return response()->json([
-            'lists' => [],
+            'lists' => $request->user()->lists()->get(),
         ]);
     }
 
@@ -33,9 +36,15 @@ class ListController extends Controller
      */
     public function store(Request $request)
     {
-        return response()->json([
-            'list' => [],
-        ]);
+        $service = app(CustomListService::class);
+        $list = $service->create($request->all());
+
+        return response()->json(
+            [
+                'list' => $list->toArray(),
+            ],
+            status: 201
+        );
     }
 
     /**
