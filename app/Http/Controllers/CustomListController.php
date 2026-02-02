@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreCustomListRequest;
 use App\Services\CustomListService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
-use Illuminate\Http\Request;;
+use Illuminate\Http\Request;
+use Symfony\Component\HttpKernel\HttpCache\Store;;
 
 class CustomListController extends Controller
 {
@@ -34,10 +36,10 @@ class CustomListController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreCustomListRequest $request)
     {
         $service = app(CustomListService::class);
-        $list = $service->create(['data' => $request->all(), 'user' => $request->user()->uuid]);
+        $list = $service->create(['data' => $request->validated(), 'user' => $request->user()->uuid]);
 
         return response()->json(
             [
