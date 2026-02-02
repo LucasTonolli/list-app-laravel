@@ -12,3 +12,7 @@ Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__i
 Route::resource('lists', App\Http\Controllers\CustomListController::class)
     ->only(['index', 'store', 'update', 'destroy', 'show'])
     ->middleware('auth:sanctum');
+
+Route::resource('lists/{list}/items', App\Http\Controllers\ListItemController::class)
+    ->only(['store', 'update', 'destroy'])
+    ->middleware('auth:sanctum');

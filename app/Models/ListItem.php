@@ -12,9 +12,9 @@ class ListItem extends Model
 
     protected $primaryKey = 'uuid';
 
-    protected array $fillable = [
+    protected $fillable = [
         'name',
-        'list_id',
+        'list_uuid',
         'description',
         'completed',
         'version',
