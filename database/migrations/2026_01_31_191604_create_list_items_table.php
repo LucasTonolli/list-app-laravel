@@ -15,7 +15,7 @@ return new class extends Migration
             $table->uuid()->primary();
             $table->foreignUuid('custom_list_uuid')->constrained('custom_lists', 'uuid')->onDelete('cascade');
             $table->string('name');
-            $table->text('description');
+            $table->text('description')->nullable();
             $table->boolean('completed')->default(false);
             $table->integer('version')->default(1);
             $table->foreignUuid('locked_by')->nullable()->constrained('users', 'uuid');
