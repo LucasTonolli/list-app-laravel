@@ -16,8 +16,9 @@ class CustomList extends Model
 
     protected $fillable = [
         'title',
-        'owner_id',
+        'owner_uuid',
     ];
+
 
     public function owner(): BelongsTo
     {

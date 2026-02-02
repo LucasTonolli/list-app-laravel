@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use CustomListService;
+use App\Services\CustomListService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;;
 
@@ -37,11 +37,11 @@ class CustomListController extends Controller
     public function store(Request $request)
     {
         $service = app(CustomListService::class);
-        $list = $service->create($request->all());
+        $list = $service->create(['data' => $request->all(), 'user' => $request->user()->uuid]);
 
         return response()->json(
             [
-                'list' => $list->toArray(),
+                'list' => $list->toArray($request),
             ],
             status: 201
         );
