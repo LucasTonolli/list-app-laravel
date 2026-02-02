@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Collection;
 use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
@@ -28,11 +27,8 @@ class User extends Authenticatable
         return $this->belongsToMany(CustomList::class)->wherePivot('role', 'editor');
     }
 
-    public function lists(): Collection
+    public function lists(): BelongsToMany
     {
-        return collect([
-            'owned' => $this->ownedLists(),
-            'shared' => $this->sharedLists(),
-        ]);
+        return $this->belongsToMany(CustomList::class);
     }
 }
