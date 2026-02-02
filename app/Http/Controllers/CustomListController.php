@@ -7,6 +7,7 @@ use App\Http\Requests\StoreCustomListRequest;
 use App\Http\Resources\CustomListResource;
 use App\Models\CustomList;
 use App\Services\CustomListService;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -71,6 +72,10 @@ class CustomListController extends Controller
      */
     public function update(SaveCustomListRequest $request, CustomList $list, CustomListService $service)
     {
+        if ($request->user()->cannot('update', $list)) {
+            return response()->json(['message' => 'Você não pode editar essa lista.'], 403);
+        }
+
         $service->update($list, $request->validated('title'));
         return response()->json([
             'list' => (new CustomListResource($list))->toArray($request),
@@ -82,9 +87,9 @@ class CustomListController extends Controller
      */
     public function destroy(Request $request, CustomList $list, CustomListService $service)
     {
-        // if ($request->user()->cannot('delete', $list)) {
-        //     return Response::deny('Você não pode deletar essa lista.');
-        // }
+        if ($request->user()->cannot('delete', $list)) {
+            return response()->json(['message' => ' Você não pode deletar essa lista.'], 403);
+        }
 
         $deleted = $service->delete($list);
 
