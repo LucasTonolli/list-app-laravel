@@ -4,9 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCustomListRequest;
 use App\Http\Resources\CustomListResource;
+use App\Models\CustomList;
 use App\Services\CustomListService;
+use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
+use Pest\ArchPresets\Custom;
 use Symfony\Component\HttpKernel\HttpCache\Store;;
 
 class CustomListController extends Controller
@@ -76,11 +79,17 @@ class CustomListController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, CustomList $list, CustomListService $service)
     {
+        // if ($request->user()->cannot('delete', $list)) {
+        //     return Response::deny('Você não pode deletar essa lista.');
+        // }
+
+        $deleted = $service->delete($list);
+
         return response()->json([
-            'list' => [],
-            'deleted' => true
+            'list' => (new CustomListResource($list))->toArray($request),
+            'deleted' => $deleted
         ]);
     }
 }

@@ -38,4 +38,11 @@ final class CustomListService
         $user = User::where('uuid', $userUuid)->first();
         return $user->lists()->get();
     }
+
+    public function delete(CustomList $list): bool
+    {
+        return DB::transaction(function () use ($list) {
+            return $list->delete();
+        });
+    }
 }
