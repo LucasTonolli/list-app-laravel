@@ -11,7 +11,8 @@ final class IdentityService
     public function register(): string
     {
         $user = User::create();
+        $token = $user->createToken('token')->plainTextToken;
 
-        return $user->uuid;
+        return $token;
     }
 }

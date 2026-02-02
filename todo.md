@@ -8,11 +8,9 @@ Aqui está o seu roteiro arquitetural, focado em **organização e segurança**:
 
 ### 1. Refatoração de Identidade (Sanctum)
 
-- [ ] **Migrar para Personal Access Tokens:** Em vez de enviar o UUID puro, crie um endpoint `POST /identities` que gera um usuário e retorna um `plainTextToken` do Sanctum.
-- [ ] **Substituir o Middleware Manual:** Trocar o seu `UserToken` pelo middleware nativo `auth:sanctum`.
+- [ X ] **Migrar para Personal Access Tokens:** Em vez de enviar o UUID puro, crie um endpoint `POST /identities` que gera um usuário e retorna um `plainTextToken` do Sanctum.
+- [ X ] **Substituir o Middleware Manual:** Trocar o seu `UserToken` pelo middleware nativo `auth:sanctum`.
 - _Por que?_ O Sanctum já faz a validação, protege contra ataques de timing e injeta o objeto `User` autenticado automaticamente no `$request`.
-
-- [ ] **Injeção de Identidade no Front-end:** Garantir que o token recebido seja armazenado e enviado no header `Authorization: Bearer {token}`.
 
 ### 2. Camada de Domínio e Relacionamentos
 
