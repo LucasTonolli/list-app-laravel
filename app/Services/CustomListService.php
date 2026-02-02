@@ -33,25 +33,20 @@ final class CustomListService
         });
     }
 
-    public function getAll(string $userUuid): Collection
+    public function getAll(User $user): Collection
     {
-        $user = User::where('uuid', $userUuid)->first();
         return $user->lists()->get();
     }
 
     public function delete(CustomList $list): bool
     {
-        return DB::transaction(function () use ($list) {
-            return $list->delete();
-        });
+        return $list->delete();
     }
 
     public function update(CustomList $list, string $title): bool
     {
-        return DB::transaction(function () use ($list, $title) {
-            return $list->update([
-                'title' => $title,
-            ]);
-        });
+        return $list->update([
+            'title' => $title,
+        ]);
     }
 }

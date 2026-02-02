@@ -20,8 +20,9 @@ class CustomListController extends Controller
      */
     public function index(Request $request, CustomListService $service)
     {
+        $lists = $service->getAll($request->user());
         return response()->json([
-            'lists' => $service->getAll($request->user()->uuid)->toResourceCollection(CustomListResource::class),
+            'lists' => CustomListResource::collection($lists),
         ]);
     }
 
