@@ -33,6 +33,11 @@ final class CustomListService
         });
     }
 
+    public function get(string $id): CustomList
+    {
+        return CustomList::find($id);
+    }
+
     public function getAll(User $user): Collection
     {
         return $user->lists()->get();

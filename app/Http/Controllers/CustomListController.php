@@ -54,9 +54,15 @@ class CustomListController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Request $request, CustomList $list, CustomListService $service)
     {
-        throw new \Exception('Not implemented');
+        if ($request->user()->cannot('view', $list)) {
+            return response()->json(['message' => 'Você não pode ver essa lista.'], 403);
+        }
+
+        return response()->json([
+            'list' => (new CustomListResource($list))->toArray($request),
+        ]);
     }
 
     /**

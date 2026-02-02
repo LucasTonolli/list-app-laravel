@@ -4,7 +4,7 @@ namespace App\Policies;
 
 use App\Models\CustomList;
 use App\Models\User;
-use Illuminate\Auth\Access\Response;
+
 
 class CustomListPolicy
 {
@@ -21,7 +21,7 @@ class CustomListPolicy
      */
     public function view(User $user, CustomList $customList): bool
     {
-        return $customList->sharedWith()->where('user_uuid', $user->id)->exists();
+        return $customList->sharedWith()->where('user_uuid', $user->uuid)->exists();
     }
 
     /**
@@ -50,7 +50,7 @@ class CustomListPolicy
 
     public function updateItems(User $user, CustomList $customList): bool
     {
-        return $customList->sharedWith()->where('user_uuid', $user->id)->exists();
+        return $customList->sharedWith()->where('user_uuid', $user->uuid)->exists();
     }
 
     /**

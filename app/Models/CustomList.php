@@ -27,7 +27,7 @@ class CustomList extends Model
 
     public function sharedWith(): BelongsToMany
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot('role');
     }
 
     public function editors(): BelongsToMany

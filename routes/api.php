@@ -10,5 +10,5 @@ Route::get('/user', function (Request $request) {
 Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__invoke']);
 
 Route::resource('lists', App\Http\Controllers\CustomListController::class)
-    ->only(['index', 'store', 'update', 'destroy'])
+    ->only(['index', 'store', 'update', 'destroy', 'show'])
     ->middleware('auth:sanctum');
