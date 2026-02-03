@@ -37,4 +37,22 @@ final class ListItemService
     {
         return (bool) $item->delete();
     }
+
+    public function update(ListItem $item, string $name, ?string $description = null, int $version): bool
+    {
+        $updated = ListItem::where('uuid', $item->uuid)
+            ->where('version', $version)
+            ->update([
+                'name' => $name,
+                'description' => $description,
+                'version' => $version + 1,
+            ]);
+        if (!$updated) {
+            throw new \Exception('Item version mismatch', 409);
+        }
+
+        $item->refresh();
+
+        return (bool) $updated;
+    }
 }
