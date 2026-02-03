@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use stdClass;
 
 final class CustomListService
 {
@@ -33,7 +34,7 @@ final class CustomListService
         });
     }
 
-    public function get(string $id): CustomList
+    public function get(string $id): stdClass
     {
         return CustomList::find($id);
     }
@@ -45,12 +46,12 @@ final class CustomListService
 
     public function delete(CustomList $list): bool
     {
-        return $list->delete();
+        return (bool) $list->delete();
     }
 
     public function update(CustomList $list, string $title): bool
     {
-        return $list->update([
+        return (bool) $list->update([
             'title' => $title,
         ]);
     }
