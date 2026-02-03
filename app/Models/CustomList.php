@@ -40,6 +40,11 @@ class CustomList extends Model
         return $this->hasMany(ListItem::class);
     }
 
+    public function invitations(): HasMany
+    {
+        return $this->hasMany(ListInvitation::class);
+    }
+
     public function getRouteKeyName(): string
     {
         return 'uuid';
