@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('name');
             $table->text('description')->nullable();
             $table->boolean('completed')->default(false);
-            $table->integer('version')->default(1);
+            $table->integer('version')->unsigned()->default(1);
             $table->foreignUuid('locked_by')->nullable()->constrained('users', 'uuid');
             $table->timestamp('locked_at')->nullable();
             $table->timestamps();
