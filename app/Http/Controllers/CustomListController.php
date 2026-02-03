@@ -54,11 +54,14 @@ class CustomListController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Request $request, CustomList $list, CustomListService $service)
+    public function show(Request $request, CustomList $list)
     {
         if ($request->user()->cannot('view', $list)) {
             return response()->json(['message' => 'Você não pode ver essa lista.'], 403);
         }
+
+        $list->load(['items', 'sharedWith']);
+        $list->loadCount(['items', 'sharedWith']);
 
         return response()->json([
             'list' => (new CustomListResource($list))->toArray($request),

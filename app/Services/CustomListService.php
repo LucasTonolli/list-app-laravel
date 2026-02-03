@@ -8,7 +8,6 @@ use App\Models\CustomList;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 use stdClass;
 
 final class CustomListService
@@ -26,22 +25,18 @@ final class CustomListService
                 ['role' => 'owner']
             );
 
-            Log::info('List created', [
-                'list' => $list,
-                'sharedWith' => $list->sharedWith,
-            ]);
             return $list;
         });
     }
 
-    public function get(string $id): stdClass
+    public function get(string $id): CustomList
     {
-        return CustomList::find($id);
+        return CustomList::with(['items', 'sharedWith'])->findOrFail($id);
     }
 
     public function getAll(User $user): Collection
     {
-        return $user->lists()->get();
+        return $user->lists()->withCount(['items', 'sharedWith'])->get();
     }
 
     public function delete(CustomList $list): bool
