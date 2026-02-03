@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('list_invitations', function (Blueprint $table) {
             $table->uuid()->primary();
-            $table->foreignUuid('list_uuid')->constrained('custom_lists', 'uuid')->onDelete('cascade');
+            $table->foreignUuid('custom_list_uuid')->constrained('custom_lists', 'uuid')->onDelete('cascade');
             $table->string('token');
             $table->timestamp('expires_at');
             $table->tinyInteger('max_uses')->unsigned()->default(1);

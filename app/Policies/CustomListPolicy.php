@@ -53,6 +53,11 @@ class CustomListPolicy
         return $customList->sharedWith()->where('user_uuid', $user->uuid)->exists();
     }
 
+    public function shareList(User $user, CustomList $customList): bool
+    {
+        return $customList->owner_uuid === $user->uuid;
+    }
+
     /**
      * Determine whether the user can restore the model.
      */

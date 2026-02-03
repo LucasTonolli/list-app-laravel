@@ -18,3 +18,13 @@ Route::resource('lists/{list}/items', App\Http\Controllers\ListItemController::c
     ->middleware('auth:sanctum');
 
 Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\ListItemController::class, 'toggle']);
+
+Route::post('lists/{list}/invitations', [App\Http\Controllers\ListInvitationsController::class, 'store'])
+    ->middleware('auth:sanctum')
+    ->name('lists.invitations.store');
+
+Route::get('lists/{list}/invitations/{invitation:token}', [App\Http\Controllers\ListInvitationsController::class, 'show'])->name('lists.invitations.show');
+
+Route::post('lists/{list}/invitations/{invitation:token}/accept', [App\Http\Controllers\ListInvitationsController::class, 'accept'])
+    ->middleware('auth:sanctum')
+    ->name('lists.invitations.accept');
