@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreListItemRequest;
 use App\Http\Resources\ListItemResource;
 use App\Models\CustomList;
+use App\Models\ListItem;
 use App\Services\ListItemService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class ListItemController extends Controller
 {
@@ -39,6 +41,24 @@ class ListItemController extends Controller
 
         return response()->json([
             'item' => (new ListItemResource($item))->toArray($request),
+        ], status: 201);
+    }
+
+    public function toggle(Request $request, CustomList $list, ListItem $item, ListItemService $service)
+    {
+        if ($request->user()->cannot('updateItems', $list)) {
+            return response()->json(['message' => 'Sem permissão.'], 403);
+        }
+
+        if ($item->custom_list_uuid !== $list->uuid) {
+            return response()->json(['message' => 'Sem permissão.'], 403);
+        }
+
+        $toggle = $service->toggle($item);
+
+        return response()->json([
+            'item' => (new ListItemResource($item))->toArray($request),
+            'toggle' => $toggle
         ]);
     }
 

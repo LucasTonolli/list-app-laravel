@@ -35,4 +35,9 @@ class ListItem extends Model
     {
         return $this->belongsTo(CustomList::class);
     }
+
+    public function getRouteKeyName(): string
+    {
+        return 'uuid';
+    }
 }

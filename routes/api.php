@@ -16,3 +16,5 @@ Route::resource('lists', App\Http\Controllers\CustomListController::class)
 Route::resource('lists/{list}/items', App\Http\Controllers\ListItemController::class)
     ->only(['store', 'update', 'destroy'])
     ->middleware('auth:sanctum');
+
+Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\ListItemController::class, 'toggle']);

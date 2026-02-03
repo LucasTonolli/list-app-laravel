@@ -24,4 +24,12 @@ final class ListItemService
             return $item;
         });
     }
+
+    public function toggle(ListItem $item): bool
+    {
+        return $item->update([
+            'completed' => !$item->completed,
+            'version' => $item->version + 1,
+        ]);
+    }
 }
