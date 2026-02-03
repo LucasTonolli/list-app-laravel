@@ -27,9 +27,14 @@ final class ListItemService
 
     public function toggle(ListItem $item): bool
     {
-        return $item->update([
+        return (bool) $item->update([
             'completed' => !$item->completed,
             'version' => $item->version + 1,
         ]);
+    }
+
+    public function delete(ListItem $item): bool
+    {
+        return (bool) $item->delete();
     }
 }

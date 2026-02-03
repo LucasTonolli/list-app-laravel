@@ -89,8 +89,21 @@ class ListItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Request $request, CustomList $list, ListItem $item, ListItemService $service)
     {
-        //
+        if ($request->user()->cannot('updateItems', $list)) {
+            return response()->json(['message' => 'Sem permissão.'], 403);
+        }
+
+        if ($item->custom_list_uuid !== $list->uuid) {
+            return response()->json(['message' => 'Sem permissão.'], 403);
+        }
+
+        $deleted = $service->delete($item);
+
+        return response()->json([
+            'item' => (new ListItemResource($item))->toArray($request),
+            'deleted' => $deleted
+        ]);
     }
 }
