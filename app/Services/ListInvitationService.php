@@ -44,7 +44,7 @@ final class ListInvitationService
 
         return (bool) DB::transaction(function () use ($list, $user, $invitation) {
 
-            $affected = $invitation->where('id', $invitation->id)
+            $affected = $invitation->where('uuid', $invitation->uuid)
                 ->where('uses', '<', $invitation->max_uses)
                 ->increment('uses');
 
