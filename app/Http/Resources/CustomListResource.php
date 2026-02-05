@@ -18,8 +18,8 @@ class CustomListResource extends JsonResource
         $properties =  [
             'uuid' => $this->uuid,
             'title' => $this->title,
-            'items_count' => $this->items_count ?? 0,
-            'shared_with_count' => $this->shared_with_count ?? 0,
+            'items_count' => $this->whenCounted('items'),
+            'shared_with_count' => $this->whenCounted('shared_with'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'items' => ListItemResource::collection($this->whenLoaded('items')),
