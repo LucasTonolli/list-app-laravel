@@ -4,11 +4,12 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Prunable;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ListInvitation extends Model
 {
-    use HasUuids;
+    use HasUuids, Prunable;
 
     protected $primaryKey = 'uuid';
 
@@ -23,5 +24,10 @@ class ListInvitation extends Model
     public function list(): BelongsTo
     {
         return $this->belongsTo(CustomList::class);
+    }
+
+    public function prunable()
+    {
+        return static::where('expires_at', '<', now());
     }
 }

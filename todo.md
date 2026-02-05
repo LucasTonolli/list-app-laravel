@@ -9,28 +9,28 @@
 
 ## 🧪 Qualidade de Código (Testes com PEST)
 
-- [ ] **Testes de Itens (ListItem)**
-- [ ] Validar CRUD e Toggle.
-- [ ] **Teste de Concorrência:** Simular erro 409 quando a `version` é incompatível.
+- [ X ] **Testes de Itens (ListItem)**
+- [ X ] Validar CRUD e Toggle.
+- [ X ] **Teste de Concorrência:** Simular erro 409 quando a `version` é incompatível.
 
-- [ ] **Testes de Convite (Invitations)**
-- [ ] Validar fluxo completo: Gerar -> Show -> Accept.
-- [ ] Testar limites de expiração e `max_uses`.
+- [ X ] **Testes de Convite (Invitations)**
+- [ X ] Validar fluxo completo: Gerar -> Show -> Accept.
+- [ X ] Testar limites de expiração e `max_uses`.
 
-- [ ] **Testes de Integração de API**
+- [ X ] **Testes de Integração de API**
 - [ ] Garantir que o `CustomListResource` entrega os itens apenas quando carregados.
 
 ## 🧹 Manutenção e Background Jobs (Scheduler)
 
 - [ ] **Limpeza de Convites Expirados**
-- [ ] Criar Job para deletar registros da tabela `list_invitations` onde `expires_at < now()`.
+- [X ] Criar Job para deletar registros da tabela `list_invitations` onde `expires_at < now()`.
 
 - [ ] **Arquivamento/Limpeza de Listas Inativas**
 - [ ] Identificar listas com itens não atualizados há mais de 30 dias.
 - [ ] Decidir política de limpeza (Soft Delete ou remoção definitiva).
 
 - [ ] **Expurgo de Tokens e Usuários Inativos**
-- [ ] Limpar tokens do Sanctum expirados (`personal_access_tokens`).
+- [ X ] Limpar tokens do Sanctum expirados (`personal_access_tokens`).
 - [ ] Criar rotina para lidar com usuários sem atividade recente (limpeza de conta).
 
 ## 📈 Evolução Futura (Backlog)
