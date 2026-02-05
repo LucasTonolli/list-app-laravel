@@ -22,7 +22,9 @@ class CustomListResource extends JsonResource
             'shared_with_count' => $this->whenCounted('shared_with'),
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
-            'items' => ListItemResource::collection($this->whenLoaded('items')),
+            'items' => $this->whenLoaded('items', function () {
+                return ListItemResource::collection($this->items);
+            }),
         ];
 
         return $properties;
