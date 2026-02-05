@@ -100,11 +100,8 @@ class CustomListController extends Controller
             return response()->json(['message' => ' Você não pode deletar essa lista.'], 403);
         }
 
-        $deleted = $service->delete($list);
+        $service->delete($list);
 
-        return response()->json([
-            'list' => (new CustomListResource($list))->toArray($request),
-            'deleted' => $deleted
-        ]);
+        return response()->json(status: 204);
     }
 }
