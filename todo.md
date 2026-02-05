@@ -2,10 +2,10 @@
 
 ## 🛡️ Segurança e Performance
 
-- [ ] **Configurar Rate Limiting customizado**
-- [ ] Limite para criação de convites (evitar spam de tokens).
-- [ ] Limite para aceitação de convites (prevenir brute-force de tokens).
-- [ ] Aplicar middlewares `throttle` nas rotas críticas.
+- [ X ] **Configurar Rate Limiting customizado**
+- [ X ] Limite para criação de convites (evitar spam de tokens).
+- [ X ] Limite para aceitação de convites (prevenir brute-force de tokens).
+- [ X ] Aplicar middlewares `throttle` nas rotas críticas.
 
 ## 🧪 Qualidade de Código (Testes com PEST)
 
