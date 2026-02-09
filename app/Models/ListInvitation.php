@@ -14,7 +14,7 @@ class ListInvitation extends Model
     protected $primaryKey = 'uuid';
 
     protected $fillable = [
-        'list_uuid',
+        'custom_list_uuid',
         'token',
         'expires_at',
         'max_uses',
@@ -23,7 +23,7 @@ class ListInvitation extends Model
 
     public function list(): BelongsTo
     {
-        return $this->belongsTo(CustomList::class);
+        return $this->belongsTo(CustomList::class, 'custom_list_uuid');
     }
 
     public function prunable()

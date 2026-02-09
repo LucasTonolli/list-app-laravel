@@ -19,11 +19,14 @@ class ListInvitationResource extends JsonResource
             'max_uses' => $this->max_uses,
             'created_at' => $this->created_at,
             'expires_at' => $this->expires_at,
+
         ];
 
         if ($request->routeIs('lists.invitations.show')) {
             $properties['accept_url'] = route('lists.invitations.accept', ['list' => $this->custom_list_uuid, 'invitation' => $this]);
         } else {
+            $properties['list_title'] = $this->list->title;
+            $properties['list_uuid'] = $this->custom_list_uuid;
             $properties['share_url'] = route('lists.invitations.show', ['list' => $this->custom_list_uuid, 'invitation' => $this]);
         }
 
