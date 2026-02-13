@@ -26,11 +26,15 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(50)->by($request->user()->uuid ?: $request->ip());
         });
 
-        RateLimiter::for('inviations', function (Request $request) {
+        RateLimiter::for('invitations', function (Request $request) {
             return Limit::perMinute(5)->by($request->user()->uuid ?: $request->ip());
         });
 
         RateLimiter::for('accept_invite', function (Request $request) {
+            return Limit::perMinute(5)->by($request->user()->uuid ?: $request->ip());
+        });
+
+        RateLimiter::for('identities', function (Request $request) {
             return Limit::perMinute(5)->by($request->user()->uuid ?: $request->ip());
         });
     }
