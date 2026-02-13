@@ -19,7 +19,9 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['list-app.lucas-tonolli.com.br'],
+    'allowed_origins' => [
+        'https://list-app.lucas-tonolli.com.br',
+    ],
 
     'allowed_origins_patterns' => [],
 
