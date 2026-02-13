@@ -1,142 +1,174 @@
-# 📝 Collaborative List API
+# Lists App API
 
-API RESTful de alta performance desenvolvida em Laravel 11 para gerenciamento de listas colaborativas com foco em integridade de dados e concorrência.
+API REST para gerenciamento colaborativo de listas, construída com Laravel 12. Permite criar, compartilhar e gerenciar listas com controle de concorrência via optimistic locking e sistema de convites com expiração.
 
-## 🏗️ Arquitetura do Sistema
+## Stack
 
-O projeto segue os princípios da **Clean Architecture** e **S.O.L.I.D**, separando responsabilidades em camadas para facilitar a testabilidade e manutenção:
+- **PHP 8.4+** / **Laravel 12**
+- **PostgreSQL** (UUIDs como chave primária)
+- **Laravel Sanctum** (autenticação via token)
+- **PEST PHP** (testes)
 
-- **Controllers:** Portas de entrada da aplicação. Validam a requisição (via FormRequests) e orquestram a resposta usando Resources.
-- **Services:** Camada de lógica de negócio pura. Aqui residem as regras de transações de banco de dados, cálculos e políticas de estado.
-- **Resources (HATEOAS):** Transformam modelos em JSON, incluindo links dinâmicos que guiam o cliente sobre o próximo estado da aplicação.
-- **Policies:** Centralizam a autorização, garantindo que usuários só acessem recursos que lhes pertencem ou foram compartilhados.
+## Setup
 
----
-
-## 🔐 Fluxos Principais
-
-### 🔄 Concorrência (Optimistic Locking)
-
-Para evitar que dois usuários sobrescrevam o trabalho um do outro simultaneamente, implementamos uma trava de versão nos itens da lista.
-
-1. O cliente lê o item com `version: 1`.
-2. Ao atualizar, o cliente envia `version: 1`.
-3. O servidor verifica: se a versão no banco ainda for `1`, o update ocorre e a versão sobe para `2`.
-4. Se outro usuário já tiver atualizado para `2`, o servidor retorna `409 Conflict`.
-
-### 🔗 Compartilhamento via Link (Invitations)
-
-O sistema de convites utiliza tokens efêmeros e seguros:
-
-1. **Geração:** O dono cria um convite com expiração (ex: 5 min) e limite de usos.
-2. **Descoberta:** O convidado acessa um link que retorna os metadados do convite via `GET`.
-3. **Aceite:** O cliente consome uma URL de `POST` fornecida pela API para se vincular à lista.
-
----
-
-## 🛠️ Stack Técnica
-
-- **Framework:** Laravel 12
-- **Auth:** Laravel Sanctum (Token-based)
-- **Testes:** PEST PHP
-- **Banco de Dados:** PostgreSQL / MySQL (UUIDs como chaves primárias)
-
-## 🧹 Manutenção Automática (Jobs)
-
-A API conta com rotinas agendadas para garantir a limpeza do ambiente:
-
-- **Invites:** Remoção automática de tokens expirados.
-- **Inatividade:** Arquivamento de listas sem interação por mais de 30 dias.
-- **Tokens:** Limpeza de `personal_access_tokens` órfãos.
-
----
-
-## 🚀 Como Executar
-
-1. Clone o repositório.
-2. Configure o `.env` (especialmente `SANCTUM_STATEFUL_DOMAINS` e `FRONTEND_URL`).
-3. Execute `php artisan migrate`.
-4. Para rodar os testes: `php artisan test --parallel`.
-
----
-
-Com certeza. Adicionar exemplos de **Request/Response** no README é o que transforma uma documentação técnica em um guia prático para desenvolvedores.
-
-Aqui está o complemento para o seu `README.md`, focando no fluxo de convites que você desenhou com tanto cuidado:
-
----
-
-### 📡 Documentação de Endpoints (Exemplos)
-
-#### 1. Criar Convite
-
-**POST** `/v1/lists/{list_uuid}/invitations`
-
-> Gera um token de acesso para novos colaboradores.
-
-- **Request Body:**
-
-```json
-{
-    "max_uses": 5
-}
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
 ```
 
-- **Response (201 Created):**
+## Autenticação
+
+Registro anônimo via token. Todas as rotas protegidas exigem o header `Authorization: Bearer {token}`.
+
+```
+POST /api/identities
+```
 
 ```json
+{ "token": "1|abc123..." }
+```
+
+## Endpoints
+
+### Identidade
+
+| Metodo | Rota | Descricao | Auth |
+|--------|------|-----------|------|
+| POST | `/api/identities` | Criar usuario | Nao |
+
+### Listas
+
+| Metodo | Rota | Descricao | Auth |
+|--------|------|-----------|------|
+| GET | `/api/lists` | Listar listas | Sim |
+| POST | `/api/lists` | Criar lista | Sim |
+| GET | `/api/lists/{uuid}` | Ver lista com itens | Sim |
+| PATCH | `/api/lists/{uuid}` | Atualizar titulo | Sim |
+| DELETE | `/api/lists/{uuid}` | Deletar lista | Sim |
+
+**Body (POST/PATCH):**
+```json
+{ "title": "Minha lista" }
+```
+
+### Itens
+
+| Metodo | Rota | Descricao | Auth |
+|--------|------|-----------|------|
+| POST | `/api/lists/{list}/items` | Adicionar item | Sim |
+| PATCH | `/api/lists/{list}/items/{item}` | Atualizar item | Sim |
+| DELETE | `/api/lists/{list}/items/{item}` | Deletar item | Sim |
+| PATCH | `/api/lists/{list}/items/{item}/toggle` | Alternar conclusao | Sim |
+
+**Body (POST):**
+```json
+{ "name": "Comprar leite", "description": "Integral" }
+```
+
+**Body (PATCH):** requer `version` para optimistic locking
+```json
+{ "name": "Comprar leite desnatado", "description": "Marca X", "version": 1 }
+```
+
+### Convites
+
+| Metodo | Rota | Descricao | Auth |
+|--------|------|-----------|------|
+| POST | `/api/lists/{list}/invitations` | Criar convite | Sim |
+| GET | `/api/lists/{list}/invitations/{token}` | Ver convite | Nao |
+| POST | `/api/lists/{list}/invitations/{token}/accept` | Aceitar convite | Sim |
+
+**Criar convite:**
+```json
+// POST /api/lists/{list}/invitations
+{ "max_uses": 5 }
+```
+
+```json
+// Response 201
 {
     "invitation": {
         "uuid": "019c2450-f539-709e-b261-f19b171de042",
         "max_uses": 5,
         "created_at": "2026-02-03T16:23:31Z",
         "expires_at": "2026-02-03T16:28:31Z",
-        "share_url": "http://localhost/api/lists/uuid-da-lista/invitations/token-gerado"
+        "share_url": "http://localhost/api/lists/{list}/invitations/{token}"
     }
 }
 ```
 
----
-
-#### 2. Visualizar Convite (Landing Page do Convite)
-
-**GET** `/v1/lists/{list_uuid}/invitations/{token}`
-
-> Endpoint que o Front-end consome para exibir os detalhes do convite antes do aceite.
-
-- **Response (200 OK):**
-
+**Ver convite:**
 ```json
+// GET /api/lists/{list}/invitations/{token}
+// Response 200
 {
     "invitation": {
         "uuid": "019c2450-f539-709e-b261-f19b171de042",
         "max_uses": 5,
         "uses": 0,
         "expires_at": "2026-02-03T16:28:31Z",
-        "accept_url": "http://localhost/api/lists/uuid-da-lista/invitations/token-gerado/accept"
+        "accept_url": "http://localhost/api/lists/{list}/invitations/{token}/accept"
     }
 }
 ```
 
----
-
-#### 3. Aceitar Convite
-
-**POST** `/v1/lists/{list_uuid}/invitations/{token}/accept`
-
-> Efetiva a entrada do usuário logado na lista.
-
-- **Response (200 OK):**
-
+**Aceitar convite:**
 ```json
-{
-    "accepted": true
-}
+// POST /api/lists/{list}/invitations/{token}/accept
+// Response 200
+{ "accepted": true }
 ```
 
-- **Possíveis Erros:**
-- `403 Forbidden`: Usuário não autenticado.
-- `404 Not Found`: Token não existe ou não pertence a esta lista.
-- `409 Conflict`: Link expirado, limite de usos atingido ou usuário já é membro.
+Erros possiveis: `404` token invalido, `409` expirado/limite atingido/ja e membro.
 
----
+## Concorrencia (Optimistic Locking)
+
+Itens possuem um campo `version` que incrementa a cada atualizacao. O cliente deve enviar a versao atual ao atualizar — se outro usuario ja modificou o item, a API retorna `409 Conflict`.
+
+1. Cliente le o item com `version: 1`
+2. Cliente envia update com `version: 1`
+3. Se a versao no banco ainda for `1`, o update ocorre e a versao sobe para `2`
+4. Se ja foi alterado, retorna `409 Conflict`
+
+## Permissoes
+
+| Acao | Owner | Editor |
+|------|-------|--------|
+| Ver lista | Sim | Sim |
+| Atualizar titulo | Sim | Nao |
+| Deletar lista | Sim | Nao |
+| Gerenciar itens | Sim | Sim |
+| Criar convites | Sim | Nao |
+
+## Rate Limiting
+
+| Escopo | Limite |
+|--------|--------|
+| API geral | 50 req/min |
+| Criar identidade | 5 req/min |
+| Criar convites | 5 req/min |
+| Aceitar convites | 5 req/min |
+
+## Testes
+
+```bash
+php artisan test
+```
+
+## Arquitetura
+
+```
+Controllers -> Services -> Models
+     |
+FormRequests (validacao)
+Policies (autorizacao)
+Resources (transformacao JSON)
+```
+
+- **Controllers:** entrada da requisicao, delegam para Services
+- **Services:** logica de negocio e transacoes
+- **Policies:** autorizacao baseada em roles (owner/editor)
+- **Resources:** transformam models em JSON com links HATEOAS
