@@ -35,7 +35,7 @@ class AppServiceProvider extends ServiceProvider
         });
 
         RateLimiter::for('identities', function (Request $request) {
-            return Limit::perMinute(5)->by($request->user()->uuid ?: $request->ip());
+            return Limit::perMinute(5)->by($request->ip());
         });
     }
 }
