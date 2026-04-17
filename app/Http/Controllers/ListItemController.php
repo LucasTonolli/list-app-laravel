@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\StoreListItemRequest;
 use App\Http\Requests\UpdateListItemRequest;
 use App\Http\Resources\ListItemResource;
+use App\Http\Requests\BulkStoreListItemRequest;
 use App\Models\CustomList;
 use App\Models\ListItem;
 use App\Services\ListItemService;
@@ -42,6 +43,19 @@ class ListItemController extends Controller
 
         return response()->json([
             'item' => (new ListItemResource($item))->toArray($request),
+        ], status: 201);
+    }
+
+    public function bulkStore(BulkStoreListItemRequest $request, CustomList $list, ListItemService $service)
+    {
+        if ($request->user()->cannot('updateItems', $list)) {
+            return response()->json(['message' => 'Você não pode editar essa lista.'], 403);
+        }
+
+        $items = $service->bulkAdd($list, $request->validated('items'));
+
+        return response()->json([
+            'items' => ListItemResource::collection($items)->toArray($request),
         ], status: 201);
     }
 

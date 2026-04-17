@@ -25,6 +25,21 @@ final class ListItemService
         });
     }
 
+    public function bulkAdd(CustomList $list, array $items): array
+    {
+        return DB::transaction(function () use ($list, $items) {
+            $createdItems = [];
+            foreach ($items as $itemData) {
+                $createdItems[] = $list->items()->create([
+                    'name' => $itemData['name'],
+                    'completed' => false,
+                    'version' => 1,
+                ]);
+            }
+            return $createdItems;
+        });
+    }
+
     public function toggle(ListItem $item): bool
     {
         return (bool) $item->update([

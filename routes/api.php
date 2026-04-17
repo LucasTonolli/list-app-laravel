@@ -19,6 +19,10 @@ Route::resource('lists/{list}/items', App\Http\Controllers\ListItemController::c
     ->only(['store', 'update', 'destroy'])
     ->middleware(['auth:sanctum', 'throttle:api']);
 
+Route::post('lists/{list}/items/bulk', [App\Http\Controllers\ListItemController::class, 'bulkStore'])
+    ->middleware(['auth:sanctum', 'throttle:api'])
+    ->name('lists.items.bulkStore');
+
 Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\ListItemController::class, 'toggle'])
     ->middleware(['auth:sanctum', 'throttle:api'])
     ->name('lists.items.toggle');
