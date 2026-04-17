@@ -18,12 +18,12 @@ class ListInvitationsController extends Controller
             return response()->json(['message' => 'Você não pode compartilhar essa lista.'], 403);
         }
 
-        $invitation = $service->create($list, $request->validated('max_uses'));
+        $invitation = $service->create($list, $request->validated('max_uses'), $request->validated('expires_in_minutes'));
 
         Log::info('Invitation created', ['invitation' => $invitation]);
 
-        return response()->json([
-            'invitation' => new ListInvitationResource($invitation)->toArray($request),
+        return response()->json(data: [
+            'invitation' => new ListInvitationResource($invitation)->toArray($request)
         ]);
     }
 

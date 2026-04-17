@@ -15,6 +15,7 @@ class StoreListInvitationRequest extends FormRequest
     {
         return [
             'max_uses' => ['nullable', 'integer', 'min:1'],
+            'expires_in_minutes' => ['nullable', 'integer', 'min:5'],
         ];
     }
 

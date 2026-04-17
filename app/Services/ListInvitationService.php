@@ -11,13 +11,13 @@ use Illuminate\Support\Facades\DB;
 
 final class ListInvitationService
 {
-    public function create(CustomList $list, ?int $maxUses = 1): ListInvitation
+    public function create(CustomList $list, ?int $maxUses = 1, ?int $minutesForExpire = 5): ListInvitation
     {
-        return DB::transaction(function () use ($list, $maxUses) {
+        return DB::transaction(function () use ($list, $maxUses, $minutesForExpire) {
             return $list->invitations()->create([
                 'token' => bin2hex(random_bytes(16)),
                 'max_uses' => $maxUses ?? 1,
-                'expires_at' => now()->addMinutes(5)
+                'expires_at' => now()->addMinutes($minutesForExpire ?? 5)
             ]);
         });
     }
