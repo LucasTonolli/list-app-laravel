@@ -21,6 +21,7 @@ return [
 
     'allowed_origins' => [
         'https://list-app.lucas-tonolli.com.br',
+        'http://localhost:5173'
     ],
 
     'allowed_origins_patterns' => [],
