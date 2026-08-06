@@ -13,7 +13,7 @@ describe('List Index', function (): void {
     it('returns all lists owned by the user', function () {
         CustomList::factory()->count(3)->create(['owner_uuid' => $this->user->uuid]);
 
-        $response = $this->actingAs($this->user)->getJson('/api/lists');
+        $response = $this->actingAs($this->user)->getJson('/api/v1/lists');
 
         $response->assertStatus(200)
             ->assertJsonCount(3, 'lists')
@@ -29,7 +29,7 @@ describe('List Index', function (): void {
         $sharedList = CustomList::factory()->create(['owner_uuid' => $owner->uuid]);
         $sharedList->sharedWith()->attach($this->user->uuid, ['role' => 'editor']);
 
-        $response = $this->actingAs($this->user)->getJson('/api/lists');
+        $response = $this->actingAs($this->user)->getJson('/api/v1/lists');
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'lists');
@@ -42,7 +42,7 @@ describe('List Index', function (): void {
         $sharedList = CustomList::factory()->create(['owner_uuid' => $owner->uuid]);
         $sharedList->sharedWith()->attach($this->user->uuid, ['role' => 'editor']);
 
-        $response = $this->actingAs($this->user)->getJson('/api/lists');
+        $response = $this->actingAs($this->user)->getJson('/api/v1/lists');
 
         $response->assertStatus(200)
             ->assertJsonCount(3, 'lists');
@@ -53,14 +53,14 @@ describe('List Index', function (): void {
         CustomList::factory()->count(2)->create(['owner_uuid' => $otherUser->uuid]);
         CustomList::factory()->create(['owner_uuid' => $this->user->uuid]);
 
-        $response = $this->actingAs($this->user)->getJson('/api/lists');
+        $response = $this->actingAs($this->user)->getJson('/api/v1/lists');
 
         $response->assertStatus(200)
             ->assertJsonCount(1, 'lists');
     });
 
     it('requires authentication', function () {
-        $response = $this->getJson('/api/lists');
+        $response = $this->getJson('/api/v1/lists');
 
         $response->assertStatus(401);
     });

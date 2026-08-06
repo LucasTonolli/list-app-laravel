@@ -12,7 +12,7 @@ describe('List Show', function (): void {
 
     it('returns list details for the owner', function () {
         $response = $this->actingAs($this->user)
-            ->getJson("/api/lists/{$this->list->uuid}");
+            ->getJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -32,7 +32,7 @@ describe('List Show', function (): void {
         ]);
 
         $response = $this->actingAs($this->user)
-            ->getJson("/api/lists/{$this->list->uuid}");
+            ->getJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(200)
             ->assertJsonPath('list.items_count', 2);
@@ -43,7 +43,7 @@ describe('List Show', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->getJson("/api/lists/{$this->list->uuid}");
+            ->getJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(200);
     });
@@ -52,7 +52,7 @@ describe('List Show', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->getJson("/api/lists/{$this->list->uuid}");
+            ->getJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(403);
     });
@@ -61,13 +61,13 @@ describe('List Show', function (): void {
         $fakeUuid = '00000000-0000-0000-0000-000000000000';
 
         $response = $this->actingAs($this->user)
-            ->getJson("/api/lists/{$fakeUuid}");
+            ->getJson("/api/v1/lists/{$fakeUuid}");
 
         $response->assertStatus(404);
     });
 
     it('requires authentication', function () {
-        $response = $this->getJson("/api/lists/{$this->list->uuid}");
+        $response = $this->getJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(401);
     });
