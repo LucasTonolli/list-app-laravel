@@ -40,6 +40,10 @@ final class ListInvitationService
             throw new \Exception('Usuário já compartilha essa lista.', 409);
         }
 
+        if ($invitation->custom_list_uuid !== $list->uuid) {
+            throw new \Exception('Convite inválido.', 409);
+        }
+
 
 
         return (bool) DB::transaction(function () use ($list, $user, $invitation) {
