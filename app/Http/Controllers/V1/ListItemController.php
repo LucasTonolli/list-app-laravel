@@ -103,10 +103,6 @@ class ListItemController extends Controller
             return response()->json(['message' => 'Sem permissão de alteração.'], 403);
         }
 
-        if ($item->custom_list_uuid !== $list->uuid) {
-            return response()->json(['message' => 'Sem permissão na lista.'], 403);
-        }
-
         try {
             $updated = $service->update($item, $request->validated('name'), $request->validated('description'), $request->validated('version'));
         } catch (\Exception $e) {
@@ -126,10 +122,6 @@ class ListItemController extends Controller
     public function destroy(Request $request, CustomList $list, ListItem $item, ListItemService $service)
     {
         if ($request->user()->cannot('updateItems', $list)) {
-            return response()->json(['message' => 'Sem permissão.'], 403);
-        }
-
-        if ($item->custom_list_uuid !== $list->uuid) {
             return response()->json(['message' => 'Sem permissão.'], 403);
         }
 

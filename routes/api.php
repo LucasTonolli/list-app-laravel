@@ -14,6 +14,7 @@ Route::prefix('v1')->group(function () {
         ->middleware(['auth:sanctum', 'throttle:accept_invite'])
         ->name('lists.invitations.accept');
     Route::resource('lists.items', App\Http\Controllers\V1\ListItemController::class)
+        ->scoped(['item' => 'uuid'])
         ->only(['store', 'update', 'destroy'])
         ->middleware(['auth:sanctum', 'throttle:api']);
     Route::post('lists/{list}/items/bulk', [App\Http\Controllers\V1\ListItemController::class, 'bulkStore'])
