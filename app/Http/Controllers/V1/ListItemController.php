@@ -68,9 +68,12 @@ class ListItemController extends Controller
 
         try {
             $updated = $service->update($item, $request->validated('name'), $request->validated('description'), $request->validated('version'));
-        } catch (\Exception $e) {
+        } catch (\RuntimeException $e) {
             Log::error($e);
             return response()->json(['message' => 'A versão do item está errada.'], 409);
+        } catch (\Exception $e) {
+            Log::error($e);
+            return response()->json(['message' => 'Ocorreu um erro ao atualizar o item.'], 500);
         }
 
         return response()->json([

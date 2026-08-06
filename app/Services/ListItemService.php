@@ -63,7 +63,7 @@ final class ListItemService
                 'version' => $version + 1,
             ]);
         if (!$updated) {
-            throw new \Exception('Item version mismatch', 409);
+            throw new \RuntimeException('Item version mismatch', 409);
         }
 
         $item->refresh();
