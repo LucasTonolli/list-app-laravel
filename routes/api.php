@@ -8,12 +8,12 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:sanctum');
 
 Route::prefix('v1')->group(function () {
-    Route::resource('lists.invitations', App\Http\Controllers\V1\ListInvitationsController::class)
+    Route::apiResource('lists.invitations', App\Http\Controllers\V1\ListInvitationsController::class)
         ->scoped(['invitation' => 'token']);
     Route::post('lists/{list}/invitations/{invitation:token}/accept', [App\Http\Controllers\V1\ListInvitationsController::class, 'accept'])
         ->middleware(['auth:sanctum', 'throttle:accept_invite'])
         ->name('lists.invitations.accept');
-    Route::resource('lists.items', App\Http\Controllers\V1\ListItemController::class)
+    Route::apiResource('lists.items', App\Http\Controllers\V1\ListItemController::class)
         ->scoped(['item' => 'uuid'])
         ->only(['store', 'update', 'destroy'])
         ->middleware(['auth:sanctum', 'throttle:api']);
@@ -24,12 +24,10 @@ Route::prefix('v1')->group(function () {
     Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\V1\ListItemController::class, 'toggle'])
         ->middleware(['auth:sanctum', 'throttle:api'])
         ->name('lists.items.toggle');
+    Route::apiResource('lists', App\Http\Controllers\V1\CustomListController::class)
+        ->middleware(['auth:sanctum', 'throttle:api']);
 });
 
 Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__invoke',])
     ->middleware('throttle:identities')
     ->name('identities.store');
-
-Route::resource('lists', App\Http\Controllers\CustomListController::class)
-    ->only(['index', 'store', 'update', 'destroy', 'show'])
-    ->middleware(['auth:sanctum', 'throttle:api']);

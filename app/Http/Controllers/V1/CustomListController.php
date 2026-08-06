@@ -1,13 +1,12 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\SaveCustomListRequest;
-use App\Http\Requests\StoreCustomListRequest;
 use App\Http\Resources\CustomListResource;
 use App\Models\CustomList;
 use App\Services\CustomListService;
-use Illuminate\Auth\Access\Response;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
@@ -27,14 +26,6 @@ class CustomListController extends Controller
         ]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     * @TODO → FormRequest
-     */
-    public function create(Request $request)
-    {
-        throw new \Exception('Not implemented');
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -64,14 +55,6 @@ class CustomListController extends Controller
         return response()->json([
             'list' => (new CustomListResource($list))->toArray($request),
         ]);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        throw new \Exception('Not implemented');
     }
 
     /**
