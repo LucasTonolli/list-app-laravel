@@ -19,7 +19,7 @@ describe('List Item Toggle', function (): void {
 
     it('toggles item from incomplete to complete', function () {
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
 
         $response->assertStatus(200)
             ->assertJsonPath('item.completed', true)
@@ -35,7 +35,7 @@ describe('List Item Toggle', function (): void {
         $this->item->update(['completed' => true]);
 
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
 
         $response->assertStatus(200)
             ->assertJsonPath('item.completed', false);
@@ -48,7 +48,7 @@ describe('List Item Toggle', function (): void {
 
     it('increments version on toggle', function () {
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
 
         $response->assertStatus(200)
             ->assertJsonPath('item.version', 2);
@@ -59,7 +59,7 @@ describe('List Item Toggle', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
 
         $response->assertStatus(200);
     });
@@ -68,7 +68,7 @@ describe('List Item Toggle', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
 
         $response->assertStatus(403);
     });
@@ -77,13 +77,13 @@ describe('List Item Toggle', function (): void {
         $otherList = CustomList::factory()->create(['owner_uuid' => $this->owner->uuid]);
 
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$otherList->uuid}/items/{$this->item->uuid}/toggle");
+            ->patchJson("/api/v1/lists/{$otherList->uuid}/items/{$this->item->uuid}/toggle");
 
         $response->assertStatus(403);
     });
 
     it('requires authentication', function () {
-        $response = $this->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
+        $response = $this->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}/toggle");
 
         $response->assertStatus(401);
     });

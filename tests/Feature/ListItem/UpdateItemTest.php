@@ -20,7 +20,7 @@ describe('List Item Update', function (): void {
 
     it('allows the owner to update an item with correct version', function () {
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
                 'name' => 'Updated name',
                 'description' => 'Updated description',
                 'version' => 1
@@ -42,7 +42,7 @@ describe('List Item Update', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
                 'name' => 'Editor update',
                 'version' => 1
             ]);
@@ -52,7 +52,7 @@ describe('List Item Update', function (): void {
 
     it('fails with wrong version (optimistic locking)', function () {
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
                 'name' => 'Outdated update',
                 'version' => 99
             ]);
@@ -70,7 +70,7 @@ describe('List Item Update', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
                 'name' => 'Hacked',
                 'version' => 1
             ]);
@@ -82,7 +82,7 @@ describe('List Item Update', function (): void {
         $otherList = CustomList::factory()->create(['owner_uuid' => $this->owner->uuid]);
 
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$otherList->uuid}/items/{$this->item->uuid}", [
+            ->patchJson("/api/v1/lists/{$otherList->uuid}/items/{$this->item->uuid}", [
                 'name' => 'Wrong list',
                 'version' => 1
             ]);
@@ -92,7 +92,7 @@ describe('List Item Update', function (): void {
 
     it('requires name to be provided', function () {
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
                 'version' => 1
             ]);
 
@@ -102,7 +102,7 @@ describe('List Item Update', function (): void {
 
     it('requires version to be provided', function () {
         $response = $this->actingAs($this->owner)
-            ->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
                 'name' => 'Updated'
             ]);
 
@@ -111,7 +111,7 @@ describe('List Item Update', function (): void {
     });
 
     it('requires authentication', function () {
-        $response = $this->patchJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
+        $response = $this->patchJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}", [
             'name' => 'Test',
             'version' => 1
         ]);

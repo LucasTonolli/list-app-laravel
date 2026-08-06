@@ -12,7 +12,7 @@ describe('List Item Store', function (): void {
 
     it('allows the owner to add an item', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/items", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/items", [
                 'name' => 'Buy milk',
                 'description' => 'From the grocery store'
             ]);
@@ -36,7 +36,7 @@ describe('List Item Store', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->postJson("/api/lists/{$this->list->uuid}/items", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/items", [
                 'name' => 'Editor item'
             ]);
 
@@ -47,7 +47,7 @@ describe('List Item Store', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->postJson("/api/lists/{$this->list->uuid}/items", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/items", [
                 'name' => 'Hacked item'
             ]);
 
@@ -56,7 +56,7 @@ describe('List Item Store', function (): void {
 
     it('requires name to be provided', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/items", []);
+            ->postJson("/api/v1/lists/{$this->list->uuid}/items", []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['name']);
@@ -66,7 +66,7 @@ describe('List Item Store', function (): void {
         $longName = str_repeat('a', 101);
 
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/items", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/items", [
                 'name' => $longName
             ]);
 
@@ -78,7 +78,7 @@ describe('List Item Store', function (): void {
         $longDescription = str_repeat('a', 1001);
 
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/items", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/items", [
                 'name' => 'Valid name',
                 'description' => $longDescription
             ]);
@@ -89,7 +89,7 @@ describe('List Item Store', function (): void {
 
     it('allows item without description', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/items", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/items", [
                 'name' => 'Item without description'
             ]);
 
@@ -97,11 +97,10 @@ describe('List Item Store', function (): void {
     });
 
     it('requires authentication', function () {
-        $response = $this->postJson("/api/lists/{$this->list->uuid}/items", [
+        $response = $this->postJson("/api/v1/lists/{$this->list->uuid}/items", [
             'name' => 'Test'
         ]);
 
         $response->assertStatus(401);
     });
-
 });
