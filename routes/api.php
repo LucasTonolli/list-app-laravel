@@ -34,7 +34,3 @@ Route::post('lists/{list}/items/bulk', [App\Http\Controllers\ListItemController:
 Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\ListItemController::class, 'toggle'])
     ->middleware(['auth:sanctum', 'throttle:api'])
     ->name('lists.items.toggle');
-
-// Route::post('lists/{list}/invitations', [App\Http\Controllers\V1\ListInvitationsController::class, 'store'])
-//     ->middleware(['auth:sanctum', 'throttle:invitations'])
-//     ->name('lists.invitations.store');
