@@ -13,6 +13,16 @@ Route::prefix('v1')->group(function () {
     Route::post('lists/{list}/invitations/{invitation:token}/accept', [App\Http\Controllers\V1\ListInvitationsController::class, 'accept'])
         ->middleware(['auth:sanctum', 'throttle:accept_invite'])
         ->name('lists.invitations.accept');
+    Route::resource('lists.items', App\Http\Controllers\V1\ListItemController::class)
+        ->only(['store', 'update', 'destroy'])
+        ->middleware(['auth:sanctum', 'throttle:api']);
+    Route::post('lists/{list}/items/bulk', [App\Http\Controllers\V1\ListItemController::class, 'bulkStore'])
+        ->middleware(['auth:sanctum', 'throttle:api'])
+        ->name('lists.items.bulkStore');
+
+    Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\V1\ListItemController::class, 'toggle'])
+        ->middleware(['auth:sanctum', 'throttle:api'])
+        ->name('lists.items.toggle');
 });
 
 Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__invoke',])
@@ -22,15 +32,3 @@ Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__i
 Route::resource('lists', App\Http\Controllers\CustomListController::class)
     ->only(['index', 'store', 'update', 'destroy', 'show'])
     ->middleware(['auth:sanctum', 'throttle:api']);
-
-Route::resource('lists/{list}/items', App\Http\Controllers\ListItemController::class)
-    ->only(['store', 'update', 'destroy'])
-    ->middleware(['auth:sanctum', 'throttle:api']);
-
-Route::post('lists/{list}/items/bulk', [App\Http\Controllers\ListItemController::class, 'bulkStore'])
-    ->middleware(['auth:sanctum', 'throttle:api'])
-    ->name('lists.items.bulkStore');
-
-Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\ListItemController::class, 'toggle'])
-    ->middleware(['auth:sanctum', 'throttle:api'])
-    ->name('lists.items.toggle');
