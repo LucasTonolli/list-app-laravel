@@ -7,6 +7,8 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
+Route::prefix('v1')->group(function () {});
+
 Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__invoke',])
     ->middleware('throttle:identities')
     ->name('identities.store');
@@ -31,7 +33,8 @@ Route::post('lists/{list}/invitations', [App\Http\Controllers\ListInvitationsCon
     ->middleware(['auth:sanctum', 'throttle:invitations'])
     ->name('lists.invitations.store');
 
-Route::get('lists/{list}/invitations/{invitation:token}', [App\Http\Controllers\ListInvitationsController::class, 'show'])->name('lists.invitations.show');
+Route::resource('lists.invitations', App\Http\Controllers\ListInvitationsController::class)
+    ->scoped(['invitation' => 'token']);
 
 Route::post('lists/{list}/invitations/{invitation:token}/accept', [App\Http\Controllers\ListInvitationsController::class, 'accept'])
     ->middleware(['auth:sanctum', 'throttle:accept_invite'])
