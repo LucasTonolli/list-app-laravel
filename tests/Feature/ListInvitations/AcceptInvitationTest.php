@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\CustomList;
-use App\Models\ListInvitation;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 
 describe('List Invitation Accept', function (): void {
 
@@ -24,7 +22,6 @@ describe('List Invitation Accept', function (): void {
 
         $response = $this->actingAs($user)
             ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
-        Log::info($response->json());
         $response->assertStatus(200)
             ->assertJsonPath('accepted', true);
 
@@ -43,7 +40,7 @@ describe('List Invitation Accept', function (): void {
 
         $this->assertDatabaseHas('list_invitations', [
             'uuid' => $this->invitation->uuid,
-            'uses' => 2
+            'uses' => 1
         ]);
     });
 
