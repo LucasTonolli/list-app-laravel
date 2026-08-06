@@ -8,21 +8,21 @@ use App\Http\Resources\ListInvitationResource;
 use App\Models\CustomList;
 use App\Models\ListInvitation;
 use App\Services\ListInvitationService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 
 
 
 class ListInvitationsController extends Controller
 {
+    use AuthorizesRequests;
     public function store(StoreListInvitationRequest $request, CustomList $list, ListInvitationService $service)
     {
         if (!$request->user()) {
             return response()->json(['message' => 'Usuário não autenticado.'], 401);
         }
 
-        if ($request->user()->cannot('shareList', $list)) {
-            return response()->json(['message' => 'Você não pode compartilhar essa lista.'], 403);
-        }
+        $this->authorize('shareList', $list);
 
         $invitation = $service->create($list, $request->validated('max_uses'), $request->validated('expires_in_minutes'));
 

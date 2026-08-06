@@ -10,11 +10,13 @@ use App\Http\Requests\BulkStoreListItemRequest;
 use App\Models\CustomList;
 use App\Models\ListItem;
 use App\Services\ListItemService;
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
 class ListItemController extends Controller
 {
+    use AuthorizesRequests;
     /**
      * Display a listing of the resource.
      */
@@ -36,9 +38,7 @@ class ListItemController extends Controller
      */
     public function store(StoreListItemRequest $request, CustomList $list, ListItemService $service)
     {
-        if ($request->user()->cannot('updateItems', $list)) {
-            return response()->json(['message' => 'Você não pode editar essa lista.'], 403);
-        }
+        $this->authorize('updateItems', $list);
 
         $item = $service->add($list, $request->validated('name'), $request->validated('description'));
 
@@ -49,9 +49,7 @@ class ListItemController extends Controller
 
     public function bulkStore(BulkStoreListItemRequest $request, CustomList $list, ListItemService $service)
     {
-        if ($request->user()->cannot('updateItems', $list)) {
-            return response()->json(['message' => 'Você não pode editar essa lista.'], 403);
-        }
+        $this->authorize('updateItems', $list);
 
         $items = $service->bulkAdd($list, $request->validated('items'));
 
@@ -62,9 +60,7 @@ class ListItemController extends Controller
 
     public function toggle(Request $request, CustomList $list, ListItem $item, ListItemService $service)
     {
-        if ($request->user()->cannot('updateItems', $list)) {
-            return response()->json(['message' => 'Sem permissão.'], 403);
-        }
+        $this->authorize('updateItems', $list);
 
         if ($item->custom_list_uuid !== $list->uuid) {
             return response()->json(['message' => 'Sem permissão.'], 403);
@@ -99,9 +95,7 @@ class ListItemController extends Controller
      */
     public function update(UpdateListItemRequest $request, CustomList $list, ListItem $item, ListItemService $service)
     {
-        if ($request->user()->cannot('updateItems', $list)) {
-            return response()->json(['message' => 'Sem permissão de alteração.'], 403);
-        }
+        $this->authorize('updateItems', $list);
 
         try {
             $updated = $service->update($item, $request->validated('name'), $request->validated('description'), $request->validated('version'));
@@ -121,9 +115,7 @@ class ListItemController extends Controller
      */
     public function destroy(Request $request, CustomList $list, ListItem $item, ListItemService $service)
     {
-        if ($request->user()->cannot('updateItems', $list)) {
-            return response()->json(['message' => 'Sem permissão.'], 403);
-        }
+        $this->authorize('updateItems', $list);
 
         $deleted = $service->delete($item);
 

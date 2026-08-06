@@ -56,9 +56,7 @@ class CustomListController extends Controller
      */
     public function show(Request $request, CustomList $list)
     {
-        if ($request->user()->cannot('view', $list)) {
-            return response()->json(['message' => 'Você não pode ver essa lista.'], 403);
-        }
+        $this->authorize('view', $list);
 
         $list->load(['items', 'sharedWith']);
         $list->loadCount(['items', 'sharedWith']);
@@ -81,9 +79,7 @@ class CustomListController extends Controller
      */
     public function update(SaveCustomListRequest $request, CustomList $list, CustomListService $service)
     {
-        if ($request->user()->cannot('update', $list)) {
-            return response()->json(['message' => 'Você não pode editar essa lista.'], 403);
-        }
+        $this->authorize('update', $list);
 
         $service->update($list, $request->validated('title'));
         return response()->json([
@@ -96,9 +92,7 @@ class CustomListController extends Controller
      */
     public function destroy(Request $request, CustomList $list, CustomListService $service)
     {
-        if ($request->user()->cannot('delete', $list)) {
-            return response()->json(['message' => ' Você não pode deletar essa lista.'], 403);
-        }
+        $this->authorize('delete', $list);
 
         $service->delete($list);
 
