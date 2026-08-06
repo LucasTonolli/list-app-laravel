@@ -52,13 +52,13 @@ describe('List Item Delete', function (): void {
         ]);
     });
 
-    it('denies delete for item from different list', function () {
+    it('not found when tries to delete for item from different list', function () {
         $otherList = CustomList::factory()->create(['owner_uuid' => $this->owner->uuid]);
 
         $response = $this->actingAs($this->owner)
             ->deleteJson("/api/v1/lists/{$otherList->uuid}/items/{$this->item->uuid}");
 
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     });
 
     it('returns 404 for non-existent item', function () {

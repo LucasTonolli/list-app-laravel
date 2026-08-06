@@ -78,7 +78,7 @@ describe('List Item Update', function (): void {
         $response->assertStatus(403);
     });
 
-    it('denies update for item from different list', function () {
+    it('not found when tries to update for item from different list', function () {
         $otherList = CustomList::factory()->create(['owner_uuid' => $this->owner->uuid]);
 
         $response = $this->actingAs($this->owner)
@@ -87,7 +87,7 @@ describe('List Item Update', function (): void {
                 'version' => 1
             ]);
 
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     });
 
     it('requires name to be provided', function () {
