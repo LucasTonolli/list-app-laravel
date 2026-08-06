@@ -114,4 +114,21 @@ describe('List Invitation Accept', function (): void {
 
         $response->assertStatus(401);
     });
+
+    it('rejects an invitation token that does not belong to the list in the URL', function () {
+        $otherOwner = User::factory()->create();
+        $otherList = CustomList::factory()->create(['owner_uuid' => $otherOwner->uuid]);
+        $user = User::factory()->create();
+
+        // Token was issued for $this->list, but we submit it against $otherList's URL.
+        $response = $this->actingAs($user)
+            ->postJson("/api/v1/lists/{$otherList->uuid}/invitations/{$this->invitation->token}/accept");
+
+        $response->assertStatus(404);
+
+        $this->assertDatabaseMissing('custom_list_user', [
+            'custom_list_uuid' => $otherList->uuid,
+            'user_uuid' => $user->uuid,
+        ]);
+    });
 });
