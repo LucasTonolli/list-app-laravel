@@ -26,8 +26,8 @@ Route::prefix('v1')->group(function () {
         ->name('lists.items.toggle');
     Route::apiResource('lists', App\Http\Controllers\V1\CustomListController::class)
         ->middleware(['auth:sanctum', 'throttle:api']);
-});
 
-Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__invoke',])
-    ->middleware('throttle:identities')
-    ->name('identities.store');
+    Route::post('/identities', App\Http\Controllers\V1\IdentityController::class)
+        ->middleware('throttle:identities')
+        ->name('identities.store');
+});
