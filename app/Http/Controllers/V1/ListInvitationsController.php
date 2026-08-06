@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\V1;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreListInvitationRequest;
 use App\Http\Resources\ListInvitationResource;
 use App\Models\CustomList;
