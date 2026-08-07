@@ -11,9 +11,8 @@ class IdentityController extends Controller
     /**
      * Handle the incoming request.
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request, IdentityService $service)
     {
-        $service = app(IdentityService::class);
         $response = $service->register();
 
         return response()->json([
