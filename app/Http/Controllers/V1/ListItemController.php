@@ -69,7 +69,7 @@ class ListItemController extends Controller
 
         try {
             $updated = $service->update($item, $request->validated('name'), $request->validated('description'), $request->validated('version'));
-        } catch (ItemversionMismatchException $e) {
+        } catch (ItemVersionMismatchException $e) {
             Log::error($e);
             return response()->json(['message' => 'A versão do item está errada.'], 409);
         } catch (\Exception $e) {
