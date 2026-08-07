@@ -28,7 +28,7 @@ final class ListItemService
     public function bulkAdd(CustomList $list, array $items): array
     {
         return DB::transaction(function () use ($list, $items) {
-            $createdItems = [];
+
             $data = collect($items)->map(function ($itemData) {
                 return [
                     'name'      => $itemData['name'],
