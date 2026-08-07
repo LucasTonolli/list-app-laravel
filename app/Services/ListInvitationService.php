@@ -13,6 +13,7 @@ use App\Exceptions\OwnerAcceptException;
 use App\Models\CustomList;
 use App\Models\ListInvitation;
 use App\Models\User;
+use Illuminate\Database\UniqueConstraintViolationException;
 use Illuminate\Support\Facades\DB;
 
 final class ListInvitationService
@@ -46,26 +47,28 @@ final class ListInvitationService
             throw new AlreadySharedException();
         }
 
-        if ($invitation->custom_list_uuid !== $list->uuid) {
-            throw new InvalidInvitationException();
-        }
-
         return (bool) DB::transaction(function () use ($list, $user, $invitation) {
 
-            $affected = $invitation->where('uuid', $invitation->uuid)
+            if ($invitation->custom_list_uuid !== $list->uuid) {
+                throw new InvalidInvitationException();
+            }
+
+            $affected = ListInvitation::where('uuid', $invitation->uuid)
                 ->where('uses', '<', $invitation->max_uses)
-                ->exists();
+                ->increment('uses');
 
             if (!$affected) {
                 throw new InvitationMaxUseException();
             }
 
-            $list->sharedWith()->attach(
-                $user->uuid,
-                ['role' => Roles::Editor]
-            );
-
-            $invitation->increment('uses');
+            try {
+                $list->sharedWith()->attach(
+                    $user->uuid,
+                    ['role' => Roles::Editor]
+                );
+            } catch (UniqueConstraintViolationException) {
+                throw new AlreadySharedException();
+            }
 
             return true;
         });
