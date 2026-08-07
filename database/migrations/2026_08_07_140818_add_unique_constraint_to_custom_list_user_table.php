@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('custom_lists', function (Blueprint $table) {
-            $table->uuid()->primary();
-            $table->string('title');
-            $table->foreignUuid('owner_uuid')->constrained('users', 'uuid')->onDelete('cascade');
-            $table->timestamps();
+        Schema::table('custom_list_user', function (Blueprint $table) {
+            $table->unique(['custom_list_uuid', 'user_uuid']);
         });
     }
 
@@ -25,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('custom_lists');
+        Schema::table('custom_list_user', function (Blueprint $table) {
+            $table->dropUnique(['custom_list_uuid', 'user_uuid']);
+        });
     }
 };

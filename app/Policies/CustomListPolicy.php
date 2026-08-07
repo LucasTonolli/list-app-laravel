@@ -21,7 +21,7 @@ class CustomListPolicy
      */
     public function view(User $user, CustomList $customList): bool
     {
-        return $customList->sharedWith()->where('user_uuid', $user->uuid)->exists();
+        return $this->isCustomListMember($user, $customList);
     }
 
     /**
@@ -50,7 +50,7 @@ class CustomListPolicy
 
     public function updateItems(User $user, CustomList $customList): bool
     {
-        return $customList->sharedWith()->where('user_uuid', $user->uuid)->exists();
+        return $this->isCustomListMember($user, $customList);
     }
 
     public function shareList(User $user, CustomList $customList): bool
@@ -72,5 +72,10 @@ class CustomListPolicy
     public function forceDelete(User $user, CustomList $customList): bool
     {
         return false;
+    }
+
+    private function isCustomListMember(User $user, CustomList $customList): bool
+    {
+        return $customList->sharedWith()->where('user_uuid', $user->uuid)->exists();
     }
 }

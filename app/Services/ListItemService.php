@@ -29,13 +29,16 @@ final class ListItemService
     {
         return DB::transaction(function () use ($list, $items) {
             $createdItems = [];
-            foreach ($items as $itemData) {
-                $createdItems[] = $list->items()->create([
-                    'name' => $itemData['name'],
+            $data = collect($items)->map(function ($itemData) {
+                return [
+                    'name'      => $itemData['name'],
                     'completed' => false,
-                    'version' => 1,
-                ]);
-            }
+                    'version'   => 1,
+                ];
+            })->toArray();
+
+            $createdItems = $list->items()->createManyQuietly($data);
+
             return $createdItems;
         });
     }
