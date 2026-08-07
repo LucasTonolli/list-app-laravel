@@ -73,13 +73,13 @@ describe('List Item Toggle', function (): void {
         $response->assertStatus(403);
     });
 
-    it('denies toggle for item from different list', function () {
+    it('not found when tries to toggle for item from different list', function () {
         $otherList = CustomList::factory()->create(['owner_uuid' => $this->owner->uuid]);
 
         $response = $this->actingAs($this->owner)
             ->patchJson("/api/v1/lists/{$otherList->uuid}/items/{$this->item->uuid}/toggle");
 
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     });
 
     it('requires authentication', function () {
