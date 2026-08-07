@@ -18,19 +18,7 @@ class User extends Authenticatable
 
     protected $primaryKey = 'uuid';
 
-    protected $fillable = [
-        'name',
-        'email',
-        'password',
-        'role',
-    ];
-
-    protected function casts(): array
-    {
-        return [
-            'role' => Roles::class
-        ];
-    }
+    protected $fillable = [];
 
     public function ownedLists(): HasMany
     {

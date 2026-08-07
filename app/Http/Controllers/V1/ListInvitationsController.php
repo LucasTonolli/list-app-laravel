@@ -22,9 +22,6 @@ class ListInvitationsController extends Controller
     use AuthorizesRequests;
     public function store(StoreListInvitationRequest $request, CustomList $list, ListInvitationService $service)
     {
-        if (!$request->user()) {
-            return response()->json(['message' => 'Usuário não autenticado.'], 401);
-        }
 
         $this->authorize('shareList', $list);
 

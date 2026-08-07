@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Exceptions\ItemversionMismatchException;
+use App\Exceptions\ItemVersionMismatchException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreListItemRequest;
 use App\Http\Requests\UpdateListItemRequest;
@@ -48,10 +48,6 @@ class ListItemController extends Controller
     {
         $this->authorize('updateItems', $list);
 
-        if ($item->custom_list_uuid !== $list->uuid) {
-            return response()->json(['message' => 'Sem permissão.'], 403);
-        }
-
         $toggle = $service->toggle($item);
 
         return response()->json([
@@ -69,7 +65,7 @@ class ListItemController extends Controller
 
         try {
             $updated = $service->update($item, $request->validated('name'), $request->validated('description'), $request->validated('version'));
-        } catch (ItemversionMismatchException $e) {
+        } catch (ItemVersionMismatchException $e) {
             Log::error($e);
             return response()->json(['message' => 'A versão do item está errada.'], 409);
         } catch (\Exception $e) {

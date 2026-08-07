@@ -28,7 +28,7 @@ final class ListItemService
     public function bulkAdd(CustomList $list, array $items): array
     {
         return DB::transaction(function () use ($list, $items) {
-            $createdItems = [];
+
             $data = collect($items)->map(function ($itemData) {
                 return [
                     'name'      => $itemData['name'],
@@ -66,7 +66,7 @@ final class ListItemService
                 'version' => $version + 1,
             ]);
         if (!$updated) {
-            throw new \App\Exceptions\ItemversionMismatchException('Item version mismatch', 409);
+            throw new \App\Exceptions\ItemVersionMismatchException('Item version mismatch', 409);
         }
 
         $item->refresh();
