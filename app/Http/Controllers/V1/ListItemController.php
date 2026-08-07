@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
+use App\Exceptions\ItemversionMismatchException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreListItemRequest;
 use App\Http\Requests\UpdateListItemRequest;
@@ -68,7 +69,7 @@ class ListItemController extends Controller
 
         try {
             $updated = $service->update($item, $request->validated('name'), $request->validated('description'), $request->validated('version'));
-        } catch (\RuntimeException $e) {
+        } catch (ItemversionMismatchException $e) {
             Log::error($e);
             return response()->json(['message' => 'A versão do item está errada.'], 409);
         } catch (\Exception $e) {
