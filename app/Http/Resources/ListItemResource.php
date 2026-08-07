@@ -24,7 +24,6 @@ class ListItemResource extends JsonResource
             'created_at' => $this->created_at,
             'updated_at' => $this->updated_at,
             'locked_at' => $this->locked_at,
-            'locked_by' => $this->locked_by
         ];
     }
 }
