@@ -12,18 +12,24 @@ use App\Models\ListInvitation;
 use App\Services\ListInvitationService;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Http\Request;
-use Illuminate\Routing\Attributes\Controllers\Middleware;
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 
-#[Middleware('auth:sanctum', only: ['store', 'accept'])]
-#[Middleware('throttle:api', only: ['accept'])]
-#[Middleware('throttle:invitations', only: ['store'])]
-class ListInvitationsController extends Controller
+class ListInvitationsController extends Controller implements HasMiddleware
 {
     use AuthorizesRequests;
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('auth:sanctum', only: ['store', 'accept']),
+            new Middleware('throttle:api', only: ['accept']),
+            new Middleware('throttle:invitations', only: ['store']),
+        ];
+    }
     public function store(StoreListInvitationRequest $request, CustomList $list, ListInvitationService $service)
     {
-
         $this->authorize('shareList', $list);
 
         $invitation = $service->create($list, $request->validated('max_uses'), $request->validated('expires_in_minutes'));
@@ -36,7 +42,7 @@ class ListInvitationsController extends Controller
     /* Público de propósito: permite pré-visualizar o convite (título + accept_url) antes de
     * logar/cadastrar, como nos links de convite do Google Docs/Notion. A segurança depende
     * só da entropia do token (128 bits, ver ListInvitationService::create). accept() é a
-    * ação que muda estado e por isso exige auth:sanctum (ver #[Middleware] da classe). */
+    * ação que muda estado e por isso exige auth:sanctum (ver método middleware() da classe). */
     public function show(Request $request, CustomList $list, ListInvitation $invitation)
     {
         return response()->json([
