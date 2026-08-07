@@ -20,6 +20,7 @@ class ListInvitationCreatedResource extends JsonResource
             'created_at' => $this->created_at,
             'expires_at' => $this->expires_at,
             'list_uuid' => $this->custom_list_uuid,
+            'token' => $this->token,
             'share_url' => route('lists.invitations.show', ['list' => $this->custom_list_uuid, 'invitation' => $this]),
         ];
     }
