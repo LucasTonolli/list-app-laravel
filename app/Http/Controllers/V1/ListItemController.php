@@ -48,10 +48,6 @@ class ListItemController extends Controller
     {
         $this->authorize('updateItems', $list);
 
-        if ($item->custom_list_uuid !== $list->uuid) {
-            return response()->json(['message' => 'Sem permissão.'], 403);
-        }
-
         $toggle = $service->toggle($item);
 
         return response()->json([
