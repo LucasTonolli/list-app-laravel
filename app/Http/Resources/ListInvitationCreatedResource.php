@@ -5,7 +5,7 @@ namespace App\Http\Resources;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class ListInvitationResource extends JsonResource
+class ListInvitationCreatedResource extends JsonResource
 {
     /**
      * Transform the resource into an array.
@@ -19,8 +19,9 @@ class ListInvitationResource extends JsonResource
             'max_uses' => $this->max_uses,
             'created_at' => $this->created_at,
             'expires_at' => $this->expires_at,
-            'list_title' => $this->list->title,
-            'accept_url' => route('lists.invitations.accept', ['list' => $this->custom_list_uuid, 'invitation' => $this]),
+            'list_uuid' => $this->custom_list_uuid,
+            'token' => $this->token,
+            'share_url' => route('lists.invitations.show', ['list' => $this->custom_list_uuid, 'invitation' => $this]),
         ];
     }
 }
