@@ -18,6 +18,13 @@ class User extends Authenticatable
 
     protected $primaryKey = 'uuid';
 
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
+
     protected function casts(): array
     {
         return [
