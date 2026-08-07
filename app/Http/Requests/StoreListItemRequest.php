@@ -18,15 +18,4 @@ class StoreListItemRequest extends FormRequest
             'description' => ['nullable', 'string', 'max:1000'],
         ];
     }
-
-    public function messages(): array
-    {
-        return [
-            'name.required' => 'Nome é obrigatório',
-            'name.string' => 'Nome deve ser uma string',
-            'name.max' => 'Nome deve ter no máximo 100 caracteres',
-            'description.string' => 'Descrição deve ser uma string',
-            'description.max' => 'Descrição deve ter no máximo 1000 caracteres',
-        ];
-    }
 }

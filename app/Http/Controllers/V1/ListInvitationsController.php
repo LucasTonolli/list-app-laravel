@@ -6,6 +6,7 @@ use App\Exceptions\InvitationException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreListInvitationRequest;
 use App\Http\Resources\ListInvitationResource;
+use App\Http\Resources\ListInvitationCreatedResource;
 use App\Models\CustomList;
 use App\Models\ListInvitation;
 use App\Services\ListInvitationService;
@@ -30,7 +31,7 @@ class ListInvitationsController extends Controller
         $invitation = $service->create($list, $request->validated('max_uses'), $request->validated('expires_in_minutes'));
 
         return response()->json(data: [
-            'invitation' => new ListInvitationResource($invitation)->toArray($request)
+            'invitation' => new ListInvitationCreatedResource($invitation)->toArray($request)
         ]);
     }
 
