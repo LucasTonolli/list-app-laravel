@@ -14,7 +14,7 @@ class ListItem extends Model
 
     protected $fillable = [
         'name',
-        'list_uuid',
+        'custom_list_uuid',
         'description',
         'completed',
         'version',
@@ -22,18 +22,9 @@ class ListItem extends Model
         'locked_at',
     ];
 
-    protected function casts()
-    {
-        return [
-            'locked_at' => 'datetime',
-            'created_at' => 'datetime',
-            'updated_at' => 'datetime'
-        ];
-    }
-
     public function list(): BelongsTo
     {
-        return $this->belongsTo(CustomList::class);
+        return $this->belongsTo(CustomList::class, 'custom_list_uuid');
     }
 
     public function getRouteKeyName(): string
