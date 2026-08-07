@@ -19,7 +19,7 @@ describe('List Item Delete', function (): void {
 
     it('allows the owner to delete an item', function () {
         $response = $this->actingAs($this->owner)
-            ->deleteJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}");
 
         $response->assertStatus(200)
             ->assertJsonPath('deleted', true);
@@ -34,7 +34,7 @@ describe('List Item Delete', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->deleteJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}");
 
         $response->assertStatus(200);
     });
@@ -43,7 +43,7 @@ describe('List Item Delete', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->deleteJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}");
 
         $response->assertStatus(403);
 
@@ -52,26 +52,26 @@ describe('List Item Delete', function (): void {
         ]);
     });
 
-    it('denies delete for item from different list', function () {
+    it('not found when tries to delete for item from different list', function () {
         $otherList = CustomList::factory()->create(['owner_uuid' => $this->owner->uuid]);
 
         $response = $this->actingAs($this->owner)
-            ->deleteJson("/api/lists/{$otherList->uuid}/items/{$this->item->uuid}");
+            ->deleteJson("/api/v1/lists/{$otherList->uuid}/items/{$this->item->uuid}");
 
-        $response->assertStatus(403);
+        $response->assertStatus(404);
     });
 
     it('returns 404 for non-existent item', function () {
         $fakeUuid = '00000000-0000-0000-0000-000000000000';
 
         $response = $this->actingAs($this->owner)
-            ->deleteJson("/api/lists/{$this->list->uuid}/items/{$fakeUuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}/items/{$fakeUuid}");
 
         $response->assertStatus(404);
     });
 
     it('requires authentication', function () {
-        $response = $this->deleteJson("/api/lists/{$this->list->uuid}/items/{$this->item->uuid}");
+        $response = $this->deleteJson("/api/v1/lists/{$this->list->uuid}/items/{$this->item->uuid}");
 
         $response->assertStatus(401);
     });

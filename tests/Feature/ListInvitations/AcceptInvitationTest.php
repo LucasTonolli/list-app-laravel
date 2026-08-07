@@ -1,9 +1,7 @@
 <?php
 
 use App\Models\CustomList;
-use App\Models\ListInvitation;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
 
 describe('List Invitation Accept', function (): void {
 
@@ -23,8 +21,7 @@ describe('List Invitation Accept', function (): void {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
-        Log::info($response->json());
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
         $response->assertStatus(200)
             ->assertJsonPath('accepted', true);
 
@@ -39,17 +36,17 @@ describe('List Invitation Accept', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $this->assertDatabaseHas('list_invitations', [
             'uuid' => $this->invitation->uuid,
-            'uses' => 2
+            'uses' => 1
         ]);
     });
 
     it('prevents owner from accepting their own invitation', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response->assertStatus(409);
     });
@@ -59,7 +56,7 @@ describe('List Invitation Accept', function (): void {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response->assertStatus(409);
     });
@@ -69,7 +66,7 @@ describe('List Invitation Accept', function (): void {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response->assertStatus(409);
     });
@@ -78,10 +75,10 @@ describe('List Invitation Accept', function (): void {
         $user = User::factory()->create();
 
         $this->actingAs($user)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response = $this->actingAs($user)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response->assertStatus(409);
     });
@@ -91,10 +88,10 @@ describe('List Invitation Accept', function (): void {
         $user2 = User::factory()->create();
 
         $response1 = $this->actingAs($user1)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response2 = $this->actingAs($user2)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response1->assertStatus(200);
         $response2->assertStatus(200);
@@ -107,14 +104,31 @@ describe('List Invitation Accept', function (): void {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations/invalid-token/accept");
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations/invalid-token/accept");
 
         $response->assertStatus(404);
     });
 
     it('requires authentication', function () {
-        $response = $this->postJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
+        $response = $this->postJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}/accept");
 
         $response->assertStatus(401);
+    });
+
+    it('rejects an invitation token that does not belong to the list in the URL', function () {
+        $otherOwner = User::factory()->create();
+        $otherList = CustomList::factory()->create(['owner_uuid' => $otherOwner->uuid]);
+        $user = User::factory()->create();
+
+        // Token was issued for $this->list, but we submit it against $otherList's URL.
+        $response = $this->actingAs($user)
+            ->postJson("/api/v1/lists/{$otherList->uuid}/invitations/{$this->invitation->token}/accept");
+
+        $response->assertStatus(404);
+
+        $this->assertDatabaseMissing('custom_list_user', [
+            'custom_list_uuid' => $otherList->uuid,
+            'user_uuid' => $user->uuid,
+        ]);
     });
 });

@@ -12,7 +12,7 @@ describe('List Invitation Store', function (): void {
 
     it('allows the owner to create an invitation', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", [
                 'max_uses' => 5
             ]);
 
@@ -30,7 +30,7 @@ describe('List Invitation Store', function (): void {
 
     it('creates invitation with default max_uses of 1', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", []);
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", []);
 
         $response->assertStatus(200)
             ->assertJsonPath('invitation.max_uses', 1);
@@ -38,7 +38,7 @@ describe('List Invitation Store', function (): void {
 
     it('creates invitation with expiration time', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", []);
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", []);
 
         $response->assertStatus(200);
         expect($response->json('invitation.expires_at'))->not->toBeNull();
@@ -46,10 +46,10 @@ describe('List Invitation Store', function (): void {
 
     it('generates unique tokens for each invitation', function () {
         $response1 = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", []);
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", []);
 
         $response2 = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", []);
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", []);
 
         expect($response1->json('invitation.share_url'))
             ->not->toBe($response2->json('invitation.share_url'));
@@ -59,7 +59,7 @@ describe('List Invitation Store', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", [
                 'max_uses' => 1
             ]);
 
@@ -71,7 +71,7 @@ describe('List Invitation Store', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", [
                 'max_uses' => 1
             ]);
 
@@ -80,7 +80,7 @@ describe('List Invitation Store', function (): void {
 
     it('rejects max_uses less than 1', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", [
                 'max_uses' => 0
             ]);
 
@@ -90,7 +90,7 @@ describe('List Invitation Store', function (): void {
 
     it('rejects non-integer max_uses', function () {
         $response = $this->actingAs($this->owner)
-            ->postJson("/api/lists/{$this->list->uuid}/invitations", [
+            ->postJson("/api/v1/lists/{$this->list->uuid}/invitations", [
                 'max_uses' => 'five'
             ]);
 
@@ -99,9 +99,8 @@ describe('List Invitation Store', function (): void {
     });
 
     it('requires authentication', function () {
-        $response = $this->postJson("/api/lists/{$this->list->uuid}/invitations", []);
+        $response = $this->postJson("/api/v1/lists/{$this->list->uuid}/invitations", []);
 
         $response->assertStatus(401);
     });
-
 });

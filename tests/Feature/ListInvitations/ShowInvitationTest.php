@@ -19,7 +19,7 @@ describe('List Invitation Show', function (): void {
     });
 
     it('shows invitation details without authentication', function () {
-        $response = $this->getJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}");
+        $response = $this->getJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}");
 
         $response->assertStatus(200)
             ->assertJsonStructure([
@@ -31,13 +31,13 @@ describe('List Invitation Show', function (): void {
         $user = User::factory()->create();
 
         $response = $this->actingAs($user)
-            ->getJson("/api/lists/{$this->list->uuid}/invitations/{$this->invitation->token}");
+            ->getJson("/api/v1/lists/{$this->list->uuid}/invitations/{$this->invitation->token}");
 
         $response->assertStatus(200);
     });
 
     it('returns 404 for invalid token', function () {
-        $response = $this->getJson("/api/lists/{$this->list->uuid}/invitations/invalid-token");
+        $response = $this->getJson("/api/v1/lists/{$this->list->uuid}/invitations/invalid-token");
 
         $response->assertStatus(404);
     });
@@ -45,7 +45,7 @@ describe('List Invitation Show', function (): void {
     it('returns 404 for token from different list', function () {
         $otherList = CustomList::factory()->create(['owner_uuid' => $this->owner->uuid]);
 
-        $response = $this->getJson("/api/lists/{$otherList->uuid}/invitations/{$this->invitation->token}");
+        $response = $this->getJson("/api/v1/lists/{$otherList->uuid}/invitations/{$this->invitation->token}");
 
         $response->assertStatus(404);
     });

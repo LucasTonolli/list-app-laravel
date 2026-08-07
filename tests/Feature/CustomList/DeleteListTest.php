@@ -12,7 +12,7 @@ describe('List Delete', function (): void {
 
     it('allows the owner to delete the list', function () {
         $response = $this->actingAs($this->user)
-            ->deleteJson("/api/lists/{$this->list->uuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(204);
 
@@ -25,7 +25,7 @@ describe('List Delete', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->deleteJson("/api/lists/{$this->list->uuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(403);
 
@@ -39,7 +39,7 @@ describe('List Delete', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->deleteJson("/api/lists/{$this->list->uuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(403);
 
@@ -57,7 +57,7 @@ describe('List Delete', function (): void {
         $this->assertDatabaseCount('list_items', 1);
 
         $this->actingAs($this->user)
-            ->deleteJson("/api/lists/{$this->list->uuid}");
+            ->deleteJson("/api/v1/lists/{$this->list->uuid}");
 
         $this->assertDatabaseCount('list_items', 0);
     });
@@ -66,13 +66,13 @@ describe('List Delete', function (): void {
         $fakeUuid = '00000000-0000-0000-0000-000000000000';
 
         $response = $this->actingAs($this->user)
-            ->deleteJson("/api/lists/{$fakeUuid}");
+            ->deleteJson("/api/v1/lists/{$fakeUuid}");
 
         $response->assertStatus(404);
     });
 
     it('requires authentication', function () {
-        $response = $this->deleteJson("/api/lists/{$this->list->uuid}");
+        $response = $this->deleteJson("/api/v1/lists/{$this->list->uuid}");
 
         $response->assertStatus(401);
     });

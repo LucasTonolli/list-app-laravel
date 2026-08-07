@@ -7,32 +7,29 @@ Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
 
-Route::post('/identities', [App\Http\Controllers\IdentityController::class, '__invoke',])
-    ->middleware('throttle:identities')
-    ->name('identities.store');
+Route::prefix('v1')->group(function () {
+    Route::apiResource('lists.invitations', App\Http\Controllers\V1\ListInvitationsController::class)
+        ->scoped(['invitation' => 'token'])
+        ->only(['store', 'show']);
 
-Route::resource('lists', App\Http\Controllers\CustomListController::class)
-    ->only(['index', 'store', 'update', 'destroy', 'show'])
-    ->middleware(['auth:sanctum', 'throttle:api']);
+    Route::post('lists/{list}/invitations/{invitation:token}/accept', [App\Http\Controllers\V1\ListInvitationsController::class, 'accept'])
+        ->middleware(['auth:sanctum', 'throttle:accept_invite'])
+        ->name('lists.invitations.accept');
+    Route::apiResource('lists.items', App\Http\Controllers\V1\ListItemController::class)
+        ->scoped(['item' => 'uuid'])
+        ->only(['store', 'update', 'destroy'])
+        ->middleware(['auth:sanctum', 'throttle:api']);
+    Route::post('lists/{list}/items/bulk', [App\Http\Controllers\V1\ListItemController::class, 'bulkStore'])
+        ->middleware(['auth:sanctum', 'throttle:api'])
+        ->name('lists.items.bulkStore');
 
-Route::resource('lists/{list}/items', App\Http\Controllers\ListItemController::class)
-    ->only(['store', 'update', 'destroy'])
-    ->middleware(['auth:sanctum', 'throttle:api']);
+    Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\V1\ListItemController::class, 'toggle'])
+        ->middleware(['auth:sanctum', 'throttle:api'])
+        ->name('lists.items.toggle');
+    Route::apiResource('lists', App\Http\Controllers\V1\CustomListController::class)
+        ->middleware(['auth:sanctum', 'throttle:api']);
 
-Route::post('lists/{list}/items/bulk', [App\Http\Controllers\ListItemController::class, 'bulkStore'])
-    ->middleware(['auth:sanctum', 'throttle:api'])
-    ->name('lists.items.bulkStore');
-
-Route::patch('lists/{list}/items/{item}/toggle', [App\Http\Controllers\ListItemController::class, 'toggle'])
-    ->middleware(['auth:sanctum', 'throttle:api'])
-    ->name('lists.items.toggle');
-
-Route::post('lists/{list}/invitations', [App\Http\Controllers\ListInvitationsController::class, 'store'])
-    ->middleware(['auth:sanctum', 'throttle:invitations'])
-    ->name('lists.invitations.store');
-
-Route::get('lists/{list}/invitations/{invitation:token}', [App\Http\Controllers\ListInvitationsController::class, 'show'])->name('lists.invitations.show');
-
-Route::post('lists/{list}/invitations/{invitation:token}/accept', [App\Http\Controllers\ListInvitationsController::class, 'accept'])
-    ->middleware(['auth:sanctum', 'throttle:accept_invite'])
-    ->name('lists.invitations.accept');
+    Route::post('/identities', App\Http\Controllers\V1\IdentityController::class)
+        ->middleware('throttle:identities')
+        ->name('identities.store');
+});

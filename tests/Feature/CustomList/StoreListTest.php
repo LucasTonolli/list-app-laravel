@@ -10,7 +10,7 @@ describe('List Store', function (): void {
 
     it('creates a new list with valid title', function () {
         $response = $this->actingAs($this->user)
-            ->postJson('/api/lists', ['title' => 'Minha Lista']);
+            ->postJson('/api/v1/lists', ['title' => 'Minha Lista']);
 
         $response->assertStatus(201)
             ->assertJsonStructure([
@@ -26,7 +26,7 @@ describe('List Store', function (): void {
 
     it('requires a title', function () {
         $response = $this->actingAs($this->user)
-            ->postJson('/api/lists', []);
+            ->postJson('/api/v1/lists', []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['title']);
@@ -34,7 +34,7 @@ describe('List Store', function (): void {
 
     it('requires title to be a string', function () {
         $response = $this->actingAs($this->user)
-            ->postJson('/api/lists', ['title' => 12345]);
+            ->postJson('/api/v1/lists', ['title' => 12345]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['title']);
@@ -44,7 +44,7 @@ describe('List Store', function (): void {
         $longTitle = str_repeat('a', 41);
 
         $response = $this->actingAs($this->user)
-            ->postJson('/api/lists', ['title' => $longTitle]);
+            ->postJson('/api/v1/lists', ['title' => $longTitle]);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['title']);
@@ -54,15 +54,14 @@ describe('List Store', function (): void {
         $title = str_repeat('a', 40);
 
         $response = $this->actingAs($this->user)
-            ->postJson('/api/lists', ['title' => $title]);
+            ->postJson('/api/v1/lists', ['title' => $title]);
 
         $response->assertStatus(201);
     });
 
     it('requires authentication', function () {
-        $response = $this->postJson('/api/lists', ['title' => 'Test']);
+        $response = $this->postJson('/api/v1/lists', ['title' => 'Test']);
 
         $response->assertStatus(401);
     });
-
 });

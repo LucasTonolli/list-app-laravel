@@ -15,7 +15,7 @@ describe('List Update', function (): void {
 
     it('allows the owner to update the title', function () {
         $response = $this->actingAs($this->user)
-            ->patchJson("/api/lists/{$this->list->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}", [
                 'title' => 'Updated Title'
             ]);
 
@@ -32,7 +32,7 @@ describe('List Update', function (): void {
         $stranger = User::factory()->create();
 
         $response = $this->actingAs($stranger)
-            ->patchJson("/api/lists/{$this->list->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}", [
                 'title' => 'Hacked Title'
             ]);
 
@@ -49,7 +49,7 @@ describe('List Update', function (): void {
         $this->list->sharedWith()->attach($editor->uuid, ['role' => 'editor']);
 
         $response = $this->actingAs($editor)
-            ->patchJson("/api/lists/{$this->list->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}", [
                 'title' => 'Editor Title'
             ]);
 
@@ -58,7 +58,7 @@ describe('List Update', function (): void {
 
     it('requires title to be provided', function () {
         $response = $this->actingAs($this->user)
-            ->patchJson("/api/lists/{$this->list->uuid}", []);
+            ->patchJson("/api/v1/lists/{$this->list->uuid}", []);
 
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['title']);
@@ -68,7 +68,7 @@ describe('List Update', function (): void {
         $longTitle = str_repeat('x', 41);
 
         $response = $this->actingAs($this->user)
-            ->patchJson("/api/lists/{$this->list->uuid}", [
+            ->patchJson("/api/v1/lists/{$this->list->uuid}", [
                 'title' => $longTitle
             ]);
 
@@ -77,11 +77,10 @@ describe('List Update', function (): void {
     });
 
     it('requires authentication', function () {
-        $response = $this->patchJson("/api/lists/{$this->list->uuid}", [
+        $response = $this->patchJson("/api/v1/lists/{$this->list->uuid}", [
             'title' => 'Test'
         ]);
 
         $response->assertStatus(401);
     });
-
 });
