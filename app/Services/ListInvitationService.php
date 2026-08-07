@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\Roles;
 use App\Exceptions\AlreadySharedException;
 use App\Exceptions\InvalidInvitationException;
 use App\Exceptions\InvitationExpiredException;
@@ -61,7 +62,7 @@ final class ListInvitationService
 
             $list->sharedWith()->attach(
                 $user->uuid,
-                ['role' => 'editor']
+                ['role' => Roles::Editor]
             );
 
             $invitation->increment('uses');

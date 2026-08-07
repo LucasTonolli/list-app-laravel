@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Enums\Roles;
 use App\Models\CustomList;
 use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
-use stdClass;
 
 final class CustomListService
 {
@@ -22,7 +22,7 @@ final class CustomListService
 
             $list->sharedWith()->attach(
                 $userUuid,
-                ['role' => 'owner']
+                ['role' => Roles::Owner]
             );
 
             return $list;

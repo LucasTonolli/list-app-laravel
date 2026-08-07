@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Roles;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,17 +24,17 @@ class CustomList extends Model
 
     public function owner(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'owner_id');
+        return $this->belongsTo(User::class, 'owner_uuid');
     }
 
     public function sharedWith(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->withPivot('role');
+        return $this->belongsToMany(User::class)->using(CustomListUser::class)->withPivot('role');
     }
 
     public function editors(): BelongsToMany
     {
-        return $this->belongsToMany(User::class)->wherePivot('role', 'editor');
+        return $this->belongsToMany(User::class)->using(CustomListUser::class)->wherePivot('role', Roles::Editor);
     }
 
     public function items(): HasMany
