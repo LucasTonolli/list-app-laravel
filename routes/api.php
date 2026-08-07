@@ -9,7 +9,9 @@ Route::get('/user', function (Request $request) {
 
 Route::prefix('v1')->group(function () {
     Route::apiResource('lists.invitations', App\Http\Controllers\V1\ListInvitationsController::class)
-        ->scoped(['invitation' => 'token']);
+        ->scoped(['invitation' => 'token'])
+        ->only(['store', 'show']);
+
     Route::post('lists/{list}/invitations/{invitation:token}/accept', [App\Http\Controllers\V1\ListInvitationsController::class, 'accept'])
         ->middleware(['auth:sanctum', 'throttle:accept_invite'])
         ->name('lists.invitations.accept');
