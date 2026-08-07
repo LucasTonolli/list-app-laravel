@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App\Services;
 
+use App\Exceptions\AlreadySharedException;
+use App\Exceptions\InvalidInvitationException;
+use App\Exceptions\InvitationExpiredException;
+use App\Exceptions\InvitationMaxUseException;
+use App\Exceptions\OwnerAcceptException;
 use App\Models\CustomList;
 use App\Models\ListInvitation;
 use App\Models\User;
@@ -25,34 +30,33 @@ final class ListInvitationService
     public function accept(CustomList $list, User $user, ListInvitation $invitation): bool
     {
         if ($user->uuid === $list->owner_uuid) {
-            throw new \Exception('Usuário proprietário da lista.', 409);
+            throw new OwnerAcceptException();
         }
 
         if ($invitation->max_uses === $invitation->uses) {
-            throw new \Exception('Compartilhamento excedido.', 409);
+            throw new InvitationMaxUseException();
         }
 
         if ($invitation->expires_at < now()) {
-            throw new \Exception('Link de compartilhamento expirado.', 409);
+            throw new InvitationExpiredException();
         }
 
         if ($list->sharedWith()->where('user_uuid', $user->uuid)->exists()) {
-            throw new \Exception('Usuário já compartilha essa lista.', 409);
+            throw new AlreadySharedException();
         }
 
         if ($invitation->custom_list_uuid !== $list->uuid) {
-            throw new \Exception('Convite inválido.', 409);
+            throw new InvalidInvitationException();
         }
-
-
 
         return (bool) DB::transaction(function () use ($list, $user, $invitation) {
 
             $affected = $invitation->where('uuid', $invitation->uuid)
-                ->where('uses', '<', $invitation->max_uses);
+                ->where('uses', '<', $invitation->max_uses)
+                ->exists();
 
             if (!$affected) {
-                throw new \Exception('Limite de convites atingido.', 409);
+                throw new InvitationMaxUseException();
             }
 
             $list->sharedWith()->attach(
