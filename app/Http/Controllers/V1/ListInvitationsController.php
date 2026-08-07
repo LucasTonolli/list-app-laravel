@@ -16,7 +16,8 @@ use Illuminate\Routing\Attributes\Controllers\Middleware;
 use Illuminate\Support\Facades\Log;
 
 #[Middleware('auth:sanctum', only: ['store', 'accept'])]
-#[Middleware('throttle:api', only: ['store', 'accept'])]
+#[Middleware('throttle:api', only: ['accept'])]
+#[Middleware('throttle:invitations', only: ['store'])]
 class ListInvitationsController extends Controller
 {
     use AuthorizesRequests;
