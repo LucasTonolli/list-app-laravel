@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\V1;
 
-use App\Exceptions\ItemversionMismatchException;
+use App\Exceptions\ItemVersionMismatchException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreListItemRequest;
 use App\Http\Requests\UpdateListItemRequest;
