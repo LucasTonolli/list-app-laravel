@@ -6,6 +6,7 @@ namespace App\Services;
 
 use App\Models\CustomList;
 use App\Models\ListItem;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
 final class ListItemService
@@ -25,7 +26,7 @@ final class ListItemService
         });
     }
 
-    public function bulkAdd(CustomList $list, array $items): array
+    public function bulkAdd(CustomList $list, array $items): Collection
     {
         return DB::transaction(function () use ($list, $items) {
 
