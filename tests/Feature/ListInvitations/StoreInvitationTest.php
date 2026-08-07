@@ -101,6 +101,6 @@ describe('List Invitation Store', function (): void {
     it('requires authentication', function () {
         $response = $this->postJson("/api/v1/lists/{$this->list->uuid}/invitations", []);
 
-        $response->assertStatus(401);
+        $response->assertStatus(403);
     });
 });
