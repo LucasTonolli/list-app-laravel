@@ -24,12 +24,14 @@ php artisan serve
 Registro anônimo via token. Todas as rotas protegidas exigem o header `Authorization: Bearer {token}`.
 
 ```
-POST /api/identities
+POST /api/v1/identities
 ```
 
 ```json
 { "token": "1|abc123..." }
 ```
+
+Todas as rotas de recurso abaixo vivem sob o prefixo `/api/v1`.
 
 ## Endpoints
 
@@ -37,17 +39,18 @@ POST /api/identities
 
 | Metodo | Rota | Descricao | Auth |
 |--------|------|-----------|------|
-| POST | `/api/identities` | Criar usuario | Nao |
+| POST | `/api/v1/identities` | Criar usuario | Nao |
+| GET | `/api/user` | Ver usuario autenticado | Sim |
 
 ### Listas
 
 | Metodo | Rota | Descricao | Auth |
 |--------|------|-----------|------|
-| GET | `/api/lists` | Listar listas | Sim |
-| POST | `/api/lists` | Criar lista | Sim |
-| GET | `/api/lists/{uuid}` | Ver lista com itens | Sim |
-| PATCH | `/api/lists/{uuid}` | Atualizar titulo | Sim |
-| DELETE | `/api/lists/{uuid}` | Deletar lista | Sim |
+| GET | `/api/v1/lists` | Listar listas | Sim |
+| POST | `/api/v1/lists` | Criar lista | Sim |
+| GET | `/api/v1/lists/{uuid}` | Ver lista com itens | Sim |
+| PATCH | `/api/v1/lists/{uuid}` | Atualizar titulo | Sim |
+| DELETE | `/api/v1/lists/{uuid}` | Deletar lista | Sim |
 
 **Body (POST/PATCH):**
 ```json
@@ -58,14 +61,20 @@ POST /api/identities
 
 | Metodo | Rota | Descricao | Auth |
 |--------|------|-----------|------|
-| POST | `/api/lists/{list}/items` | Adicionar item | Sim |
-| PATCH | `/api/lists/{list}/items/{item}` | Atualizar item | Sim |
-| DELETE | `/api/lists/{list}/items/{item}` | Deletar item | Sim |
-| PATCH | `/api/lists/{list}/items/{item}/toggle` | Alternar conclusao | Sim |
+| POST | `/api/v1/lists/{list}/items` | Adicionar item | Sim |
+| POST | `/api/v1/lists/{list}/items/bulk` | Adicionar varios itens | Sim |
+| PATCH | `/api/v1/lists/{list}/items/{item}` | Atualizar item | Sim |
+| DELETE | `/api/v1/lists/{list}/items/{item}` | Deletar item | Sim |
+| PATCH | `/api/v1/lists/{list}/items/{item}/toggle` | Alternar conclusao | Sim |
 
 **Body (POST):**
 ```json
 { "name": "Comprar leite", "description": "Integral" }
+```
+
+**Body (POST bulk):**
+```json
+{ "items": [{ "name": "Comprar leite" }, { "name": "Comprar pao" }] }
 ```
 
 **Body (PATCH):** requer `version` para optimistic locking
@@ -77,52 +86,54 @@ POST /api/identities
 
 | Metodo | Rota | Descricao | Auth |
 |--------|------|-----------|------|
-| POST | `/api/lists/{list}/invitations` | Criar convite | Sim |
-| GET | `/api/lists/{list}/invitations/{token}` | Ver convite | Nao |
-| POST | `/api/lists/{list}/invitations/{token}/accept` | Aceitar convite | Sim |
+| POST | `/api/v1/lists/{list}/invitations` | Criar convite | Sim |
+| GET | `/api/v1/lists/{list}/invitations/{token}` | Ver convite | Nao |
+| POST | `/api/v1/lists/{list}/invitations/{token}/accept` | Aceitar convite | Sim |
 
 **Criar convite:**
 ```json
-// POST /api/lists/{list}/invitations
-{ "max_uses": 5 }
+// POST /api/v1/lists/{list}/invitations
+{ "max_uses": 5, "expires_in_minutes": 30 }
 ```
 
 ```json
-// Response 201
+// Response 200
 {
     "invitation": {
         "uuid": "019c2450-f539-709e-b261-f19b171de042",
         "max_uses": 5,
         "created_at": "2026-02-03T16:23:31Z",
         "expires_at": "2026-02-03T16:28:31Z",
-        "share_url": "http://localhost/api/lists/{list}/invitations/{token}"
+        "list_uuid": "019c2450-f539-709e-b261-f19b171dabcd",
+        "share_url": "http://localhost/api/v1/lists/{list}/invitations/{token}"
     }
 }
 ```
 
-**Ver convite:**
+**Ver convite:** rota publica, pensada para pre-visualizar o convite (titulo + link de aceite) antes do usuario logar, como nos links de convite do Google Docs/Notion. A seguranca depende da entropia do token (128 bits).
 ```json
-// GET /api/lists/{list}/invitations/{token}
+// GET /api/v1/lists/{list}/invitations/{token}
 // Response 200
 {
     "invitation": {
         "uuid": "019c2450-f539-709e-b261-f19b171de042",
         "max_uses": 5,
-        "uses": 0,
+        "created_at": "2026-02-03T16:23:31Z",
         "expires_at": "2026-02-03T16:28:31Z",
-        "accept_url": "http://localhost/api/lists/{list}/invitations/{token}/accept"
+        "list_title": "Minha lista",
+        "accept_url": "http://localhost/api/v1/lists/{list}/invitations/{token}/accept"
     }
 }
 ```
 
 **Aceitar convite:**
 ```json
-// POST /api/lists/{list}/invitations/{token}/accept
+// POST /api/v1/lists/{list}/invitations/{token}/accept
 // Response 200
 { "accepted": true }
 ```
 
-Erros possiveis: `404` token invalido, `409` expirado/limite atingido/ja e membro.
+Erros possiveis (`409`): convite expirado, limite de usos atingido, usuario ja e membro da lista, dono tentando aceitar o proprio convite. `404`: token invalido ou convite nao pertence a lista informada na URL.
 
 ## Concorrencia (Optimistic Locking)
 
@@ -161,14 +172,17 @@ php artisan test
 ## Arquitetura
 
 ```
-Controllers -> Services -> Models
+Controllers (App\Http\Controllers\V1) -> Services -> Models
      |
 FormRequests (validacao)
 Policies (autorizacao)
 Resources (transformacao JSON)
+Exceptions (regras de negocio -> respostas HTTP)
 ```
 
-- **Controllers:** entrada da requisicao, delegam para Services
-- **Services:** logica de negocio e transacoes
+- **Controllers:** versionados em `V1`, entrada da requisicao, autorizam via Policy (`$this->authorize()`) e delegam para Services
+- **Services:** logica de negocio e transacoes; convites usam locking otimista via `UPDATE ... WHERE uses < max_uses` e constraint unica no banco para evitar condicoes de corrida
 - **Policies:** autorizacao baseada em roles (owner/editor)
 - **Resources:** transformam models em JSON com links HATEOAS
+- **Exceptions:** exceções de dominio (`InvitationException` e subclasses, `ItemVersionMismatchException`) traduzidas para status HTTP nos controllers
+- **Route Model Binding escopado:** `{list}/{item}` e `{list}/{invitation}` usam `->scoped()`/`Route::scopeBindings()` para garantir que um recurso filho so resolve se pertencer ao pai informado na URL
